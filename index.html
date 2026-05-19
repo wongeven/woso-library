@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WOSO_lib - 世界女足知识库</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+:root{--bg:#fafafa;--surface:#fff;--text:#1a1a2e;--text2:#555;--accent:#1a73e8;--accent-light:#e8f0fe;--border:#e8e8e8;--tag-bg:#f0f0f0;--shadow:0 2px 8px rgba(0,0,0,.08);--radius:12px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh}
+.header{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);background:rgba(255,255,255,.95)}
+.header-inner{max-width:1100px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.logo{font-size:20px;font-weight:700;cursor:pointer;color:var(--text)}
+.logo span{color:var(--accent)}
+.search-box{position:relative;width:300px;max-width:100%}
+.search-box input{width:100%;padding:8px 14px 8px 36px;border:1px solid var(--border);border-radius:20px;font-size:14px;outline:none;background:var(--bg);transition:border-color .2s}
+.search-box input:focus{border-color:var(--accent)}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#999;font-size:14px}
+.nav{max-width:1100px;margin:0 auto;padding:12px 20px 0;display:flex;gap:6px;flex-wrap:wrap}
+.nav-btn{padding:6px 14px;border:1px solid var(--border);border-radius:16px;background:var(--surface);font-size:13px;cursor:pointer;transition:all .2s;color:var(--text2)}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent)}
+.nav-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.main{max-width:1100px;margin:0 auto;padding:20px}
+.home-intro{text-align:center;padding:40px 20px 30px}
+.home-intro h1{font-size:28px;font-weight:700;margin-bottom:8px}
+.home-intro p{color:var(--text2);font-size:15px;max-width:600px;margin:0 auto}
+.stats{display:flex;justify-content:center;gap:30px;margin-top:24px;flex-wrap:wrap}
+.stat{text-align:center}
+.stat-num{font-size:28px;font-weight:700;color:var(--accent)}
+.stat-label{font-size:13px;color:var(--text2)}
+.category-section{margin-top:36px}
+.category-title{font-size:18px;font-weight:600;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid var(--accent);display:inline-block}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;cursor:pointer;transition:all .2s}
+.card:hover{box-shadow:var(--shadow);border-color:var(--accent);transform:translateY(-1px)}
+.card-emoji{font-size:24px;margin-bottom:8px}
+.card-title{font-size:15px;font-weight:600;margin-bottom:4px}
+.card-meta{font-size:12px;color:var(--text2);margin-bottom:8px}
+.card-desc{font-size:13px;color:var(--text2);line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.card-tags{margin-top:10px;display:flex;flex-wrap:wrap;gap:4px}
+.tag{font-size:11px;padding:2px 8px;border-radius:10px;background:var(--tag-bg);color:var(--text2)}
+.tag-section{margin-top:40px;padding-top:24px;border-top:1px solid var(--border)}
+.tag-cloud{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tag-btn{padding:4px 12px;border:1px solid var(--border);border-radius:14px;background:var(--surface);font-size:12px;cursor:pointer;transition:all .2s;color:var(--text2)}
+.tag-btn:hover{background:var(--accent-light);color:var(--accent);border-color:var(--accent)}
+.detail-view{display:none}
+.detail-back{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--surface);font-size:14px;cursor:pointer;margin-bottom:20px;transition:all .2s}
+.detail-back:hover{border-color:var(--accent);color:var(--accent)}
+.detail-header{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-bottom:20px}
+.detail-emoji{font-size:40px;margin-bottom:12px}
+.detail-title{font-size:24px;font-weight:700;margin-bottom:6px}
+.detail-meta{font-size:14px;color:var(--text2);margin-bottom:12px}
+.detail-desc{font-size:15px;color:var(--text2);line-height:1.7}
+.detail-tags{margin-top:14px;display:flex;flex-wrap:wrap;gap:6px}
+.detail-content{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px}
+.detail-content h1{font-size:22px;margin:24px 0 10px;border-bottom:1px solid var(--border);padding-bottom:6px}
+.detail-content h2{font-size:18px;margin:22px 0 8px;color:var(--accent)}
+.detail-content h3{font-size:15px;margin:16px 0 6px;font-weight:600}
+.detail-content p{margin:8px 0}
+.detail-content ul{padding-left:20px;margin:8px 0}
+.detail-content li{margin:4px 0}
+.detail-content strong{color:var(--text)}
+.detail-content blockquote{border-left:3px solid var(--accent);padding:10px 16px;margin:12px 0;background:var(--accent-light);border-radius:0 8px 8px 0;font-style:italic}
+.detail-content hr{border:none;border-top:1px solid var(--border);margin:20px 0}
+.detail-content table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}
+.detail-content th,.detail-content td{padding:8px 12px;border:1px solid var(--border);text-align:left}
+.detail-content th{background:var(--bg);font-weight:600}
+.search-info{font-size:14px;color:var(--text2);margin-bottom:16px}
+.search-info strong{color:var(--accent)}
+.footer{max-width:1100px;margin:40px auto 0;padding:20px;border-top:1px solid var(--border);text-align:center;font-size:12px;color:var(--text2)}
+@media(max-width:640px){.header-inner{padding:10px 16px}.search-box{width:100%}.main{padding:14px}.home-intro h1{font-size:22px}.card-grid{grid-template-columns:1fr}.detail-header,.detail-content{padding:18px}.stats{gap:20px}.nav{padding:10px 16px 0}}
+.back-top{position:fixed;bottom:24px;right:24px;width:40px;height:40px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:18px;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:var(--shadow);transition:opacity .3s}
+.back-top.visible{display:flex}
+</style>
+</head>
+<body>
+<div class="header"><div class="header-inner">
+  <div class="logo" onclick="showHome()">WOSO<span>_lib</span></div>
+  <div class="search-box"><span class="search-icon">&#128269;</span><input type="text" id="searchInput" placeholder="搜索球员、教练、话题..." oninput="handleSearch(this.value)"></div>
+</div></div>
+<div id="navBar" class="nav"></div>
+<div class="main">
+  <div id="homeView">
+    <div class="home-intro">
+      <h1>世界女足知识库</h1>
+      <p>精选 21 本全球女足经典专著 + 4 份权威产业科研报告精华笔记。覆盖球员传记、教练哲学、运动心理、战术分析和运动科学。</p>
+      <div class="stats">
+        <div class="stat"><div class="stat-num">21</div><div class="stat-label">本专著</div></div>
+        <div class="stat"><div class="stat-num">4</div><div class="stat-label">份报告</div></div>
+        <div class="stat"><div class="stat-num">7</div><div class="stat-label">大类别</div></div>
+      </div>
+    </div>
+    <div id="categorySections"></div>
+    <div class="tag-section">
+      <div style="font-size:15px;font-weight:600;margin-bottom:4px">按话题浏览</div>
+      <div class="tag-cloud" id="tagCloud"></div>
+    </div>
+  </div>
+  <div id="detailView" class="detail-view">
+    <button class="detail-back" onclick="showHome()">&#8592; 返回知识库</button>
+    <div class="detail-header" id="detailHeader"></div>
+    <div class="detail-content" id="detailContent"></div>
+  </div>
+</div>
+<div class="footer">WOSO_lib | 所有摘要笔记均为原创复述内容，非原文引用。如需深入学习，建议购买原版支持作者。</div>
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8593;</button>
+<script>
+const books=[
+  {
+    "id": "carli_lloyd_notes",
+    "title": "When Nobody Was Watching",
+    "author": "Carli Lloyd",
+    "year": "2016",
+    "category": "球员自传",
+    "region": "美国",
+    "tags": [
+      "Carli Lloyd",
+      "中场",
+      "帽子戏法",
+      "自律"
+    ],
+    "emoji": "⚽",
+    "one_line": "美国中场 Carli Lloyd 的自传，讲述一个曾被裁掉、被质疑、被称为\"疯子\"的球员，如何在34岁那年踢出了人生最伟大的比赛——开场16分钟完成帽子戏法。这是一本关于执念的书。",
+    "content": "# When Nobody Was Watching / Carli Lloyd — 精华笔记\n\n**Carli Lloyd 著**\n\n---\n\n## 一句话\n\n美国中场 Carli Lloyd 的自传，讲述一个曾被裁掉、被质疑、被称为\"疯子\"的球员，如何在34岁那年踢出了人生最伟大的比赛——开场16分钟完成帽子戏法。这是一本关于执念的书。\n\n---\n\n## 核心思想\n\nCarli Lloyd 是美国女足历史上技术最全面的中场之一，但她职业生涯中最著名的标签是：16分钟帽子戏法。\n\n2015年世界杯决赛，美国 vs 日本。在所有人期待一场激烈的较量时，Lloyd 在开场16分钟内打进了3个球——让比赛在上半场就失去了悬念。\n\n但这本书讲述的远不止那16分钟。它讲述的是一个人如何穿越15年的质疑，最终在最需要证明自己的时刻站了出来。\n\n---\n\n## 故事线\n\n**被裁掉的滋味**\n\nLloyd 早期职业生涯的最大打击不是失败，而是一次被裁员的经历。她在书中详细描述了那个时刻的震惊和痛苦——你以为自己做得很好，然后突然被告知你不属于这里。\n\n> \"那是我职业生涯中最清醒的一刻。不是因为我被裁了，而是因为我知道我必须证明每一个人都错了。\"\n\n**\"疯子\"的训练方式**\n\nLloyd 在职业生涯中有一个外号：疯子。不是因为她踢法粗暴，而是因为她训练的强度。\n\n队友们说，她每天会比其他人多练一个小时。她会在休息日独自出现在训练场，自己做技术训练。她的解释很简单：\"我不相信天赋。我只相信重复。\"\n\n**2015世界杯帽子戏法**\n\n第13章详细描述了那场决赛。Lloyd 在开场8分钟就进球了，然后在第12分钟和第16分钟再入两球。\n\n> \"当我打进第三球的时候，我的脑子里只有一个声音：还不够。你还想要更多。\"\n\n最终美国以5:2获胜，Lloyd 当选赛事最佳球员。\n\n**平等薪酬**\n\nLloyd 是2016年美国女足集体诉讼的核心成员之一。在书中，她表达了对体制的失望，同时也表达了对下一代球员的期待。\n\n---\n\n## 训练哲学\n\n1. **极致自律** — 每天比队友多练一小时\n2. **心理韧性** — 从不逃避批评，用批评作为燃料\n3. **细节追求** — 每一个技术动作都要做到标准\n4. **独立精神** — 不依赖教练告诉你该做什么，自己找到答案\n\n---\n\n## 适合谁读\n\n年轻球员、教练、体育迷，以及任何对世界杯历史上最惊人的决赛之一感兴趣的商业人士。\n\n*资料来源：Carli Lloyd, When Nobody Was Watching (2016)*\n"
+  },
+  {
+    "id": "champions_notes",
+    "title": "Champions of Women's Soccer",
+    "author": "Ann Killion",
+    "year": "2016",
+    "category": "综合",
+    "region": "全球",
+    "tags": [
+      "传奇",
+      "22位球星",
+      "FIFA梦之队",
+      "历史"
+    ],
+    "emoji": "🏆",
+    "one_line": "22位全球女足传奇球星的传记合集，用\"首发阵容\"概念编排——美国11人 + 国际11人 = 一支虚构的梦之队。每位球员一章，以小见大勾勒出全球女足的完整历史。",
+    "content": "# Champions of Women's Soccer / Ann Killion — 精华笔记\n\n**Ann Killion 著 | 2016年**\n\n---\n\n## 一句话\n\n22位全球女足传奇球星的传记合集，用\"首发阵容\"概念编排——美国11人 + 国际11人 = 一支虚构的梦之队。每位球员一章，以小见大勾勒出全球女足的完整历史。\n\n---\n\n## 核心思想\n\nAnn Killion 是《旧金山纪事报》的资深体育记者，她的写作风格是：用一个人物带出一个时代，用一个故事揭示一个主题。\n\n这本书最大的价值是它的比较视野——它不是孤立地写美国或欧洲的女足，而是把全球放在同一个框架下比较，让读者看到不同文化如何塑造了不同风格的球员。\n\n---\n\n## 首发阵容（虚构梦之队）\n\n**美国11人**\n\n| 位置 | 球员 | 代表故事 |\n|------|------|---------|\n| 前锋 | Mia Hamm | 全球商业代言最多的女足球员 |\n| 前锋 | Abby Wambach | 184球历史纪录，2015世界杯 |\n| 前锋 | Michelle Akers | 1991世界杯 MVP，2届世界杯冠军 |\n| 中场 | Kristine Lilly | 354场出场纪录 |\n| 中场 | Julie Foudy | 中场发动机，退役后 ESPN 评论员 |\n| 中场 | Carli Lloyd | 世界杯决赛帽子戏法 |\n| 后卫 | Brandi Chastain | 1999点球脱衣庆祝 |\n| 后卫 | Joy Fawcett / Becky Sauerbrunn | 两代后卫传承 |\n| 门将 | Briana Scurry | 1999点球大战 |\n| 门将 | Hope Solo | 天才门将，争议与伟大并存 |\n| 前锋 | Alex Morgan | 新一代商业代表 |\n\n**国际11人**\n\n| 位置 | 球员 | 代表故事 |\n|------|------|---------|\n| 前锋 | Marta | 巴西传奇，6次 FIFA 最佳球员 |\n| 中场 | Homare Sawa | 日本2011世界杯冠军+MVP |\n| 前锋 | Kelly Smith | 英格兰技术最全面的球员 |\n| 前锋 | Christine Sinclair | 加拿大，190球国际射手王 |\n| 前锋 | **Sun Wen（孙雯）** | 中国，1999世界杯金球+金靴 |\n| 前锋 | Birgit Prinz | 德国传奇，2届世界杯冠军 |\n| 门将 | Nadine Angerer | 德国门神 |\n| 前锋 | Lotta Schelin | 瑞典进球纪录保持者 |\n| 中场 | Sissi | 巴西优雅中场 |\n| 中场 | Louisa Nécib | 法国技术流代表 |\n| 中场 | Hege Riise | 挪威1995世界杯冠军 |\n\n---\n\n## 孙雯章节亮点\n\n书中关于孙雯的第30章写道：\n\n> \"孙雯代表了中国女足的黄金一代——那支被称为'铿锵玫瑰'的球队。她用技术、智慧和优雅重新定义了前锋的意义。1999年，她和美国队的 Michelle Akers 并列获得 FIFA 世纪最佳球员荣誉——这是亚洲球员第一次也是唯一一次获得这项殊荣。\"\n\n书中还提到，1999年世界杯决赛在中国球迷心中有着特殊地位：尽管中国输掉了点球大战，但孙雯在比赛中展现的球技和领导力，赢得了全球球迷的尊重。\n\n---\n\n## 附录亮点\n\n- **女足足坛十大事件**：1999世界杯、2011温布利决赛等\n- **十大进球**：Marta 的标志性进球、Rapinoe 的世界杯进球等\n- **历史射手榜**：包含 Christine Sinclair 超越 Abby Wambach 成为历史射手王的内容\n- **新一代超级巨星**：Sam Kerr、Rose Lavelle 等\n\n---\n\n## 适合谁读\n\n足球迷、写作者、研究者，以及想了解孙雯在世界足坛历史地位的中国球迷。\n\n---\n\n## 中英关键词\n\n- The Starting XI — 首发11人\n- Sun Wen — 孙雯\n- The Iron Roses — 铿锵玫瑰\n- FIFA World Player of the Century — FIFA 世纪最佳球员\n\n*资料来源：Ann Killion, Champions of Women's Soccer (2016)*\n"
+  },
+  {
+    "id": "chase_your_dreams_notes",
+    "title": "Chase Your Dreams",
+    "author": "Julie Ertz",
+    "year": "2019",
+    "category": "球员自传",
+    "region": "美国",
+    "tags": [
+      "Julie Ertz",
+      "信仰",
+      "年轻球员",
+      "励志"
+    ],
+    "emoji": "✨",
+    "one_line": "美国中场 Julie Ertz 写给年轻球员的励志手册，每章讲述一个人生主题。这本书没有复杂的战术分析，只有最朴素的人生智慧——关于梦想、信仰、团队和坚持。",
+    "content": "# Chase Your Dreams / Julie Ertz — 精华笔记\n\n**Julie Ertz 著 | 2019年**\n\n---\n\n## 一句话\n\n美国中场 Julie Ertz 写给年轻球员的励志手册，每章讲述一个人生主题。这本书没有复杂的战术分析，只有最朴素的人生智慧——关于梦想、信仰、团队和坚持。\n\n---\n\n## 核心思想\n\nJulie Ertz 的人生哲学很简单：相信自己，相信团队，相信过程。她的书是写给那些刚开始踢球、还不知道足球会把她们带向何方的年轻女孩的。\n\n这本书的特别之处在于它的朴素——它没有讲述惊心动魄的逆境故事，而是用平静的语气分享了一个顶级球员如何思考人生的基本问题。\n\n---\n\n## 13章主题\n\n| 章节 | 主题 | 核心信息 |\n|------|------|---------|\n| 1 | Chasing a Dream 追逐梦想 | 从小目标开始 |\n| 2 | Out of Comfort Zone 走出舒适区 | 成长发生在你害怕的地方 |\n| 3 | It's About People 关于人 | 足球是关于人的运动 |\n| 4 | Faith 信仰 | 基督教信仰是她的支柱 |\n| 5 | Adversity 逆境 | 挫折是成长的必经之路 |\n| 6 | Looking Up 仰望 | 保持乐观 |\n| 7 | Perspective & Positivity | 视角与积极 |\n| 8 | Sacrifice 牺牲 | 有所得必有所失 |\n| 9 | Hard Work 努力 | 天赋不够，努力来补 |\n| 10 | Being Coachable 可教性 | 愿意学习才能成长 |\n| 11 | Teamwork 团队 | 没有人能独自成功 |\n| 12 | Family 家庭 | 丈夫 Zach Ertz 的支持 |\n| 13 | A Dream Come True 梦想成真 | 2015世界杯夺冠 |\n\n---\n\n## 引言\n\n**关于逆境**\n\n> \"逆境不会定义你，你如何回应逆境才会定义你。\"\n\n**关于努力**\n\n> \"我见过很多比我更有天赋的球员。但我见过的最成功的球员，是那些最愿意付出努力的。\"\n\n**关于团队**\n\n> \"足球是我参与过的最团队化的活动。每一个人——前锋、后卫、门将——都必须为彼此而战。\"\n\n---\n\n## 2015世界杯（第13章）\n\nJulie 在书中描写了2015年世界杯的体验——那一年是美国队历史上最伟大的时刻之一，而 Julie 作为年轻球员第一次站上这个舞台。\n\n> \"那不是梦想的实现，那是梦想的开始。举起奖杯的那一刻，我知道我还要回来。我还要赢得更多。\"\n\n---\n\n## 适合谁读\n\n年轻球员（10-16岁）、家长，以及想了解美国女足魅力和 Julie 基督教信仰背景的读者。\n\n*资料来源：Julie Ertz, Chase Your Dreams (2019)*\n"
+  },
+  {
+    "id": "emma_hayes_notes",
+    "title": "A Completely Different Game",
+    "author": "Emma Hayes",
+    "year": "2024",
+    "category": "教练",
+    "region": "英格兰",
+    "tags": [
+      "Emma Hayes",
+      "切尔西",
+      "领导力",
+      "杀死独角兽"
+    ],
+    "emoji": "🦄",
+    "one_line": "英格兰/美国女足传奇教练 Emma Hayes 的领导力手记，核心只有一个：**杀死独角兽（Kill the Unicorn）**——没有完美领袖，只有真实的团队。",
+    "content": "# A Completely Different Game — 精华笔记\n\n**Emma Hayes 著 | 2024年**\n\n---\n\n## 一句话\n\n英格兰/美国女足传奇教练 Emma Hayes 的领导力手记，核心只有一个：**杀死独角兽（Kill the Unicorn）**——没有完美领袖，只有真实的团队。\n\n---\n\n## 核心思想\n\nHayes 2012年接手切尔西女足，12年间拿下14座奖杯。2024年出版了这本书，原版标题叫\"Kill the Unicorn\"，美国版改为\"A Completely Different Game\"。\n\n她要打倒的不是足球界的某个具体问题，而是一个全球文化中对\"完美领导者\"的想象：那个能解决一切问题、永远不会出错、永远高瞻远瞩的\"独角兽\"。\n\n> \"如果你相信领导力的秘诀就是依赖一个万能的上帝或女神……去跟你花园尽头的妖精问好吧。机构比领导者活得久，只要框架搭对了。\"\n\n---\n\n## 故事\n\n**Alex Ferguson 的橡皮筋**\n\nHayes 坐在联赛教练协会的颁奖晚宴上，旁边坐着传奇教练 Sir Alex Ferguson。CEO 在讲话，Ferguson 突然问她：\"你看到了什么？\"\n\n她试图说些得体的客套话，Ferguson 摇着头重复：\"你看到了什么？\"\n\n\"看看他的手，\"他指着她手上的橡皮筋——\"要学会观察。\"\n\nHayes 从中学到的东西：最伟大的领导者有洞察人类处境的能力。他们看人，不看职位。\n\n**球员是成年人，不是孩子**\n\nHayes 在书中专门批评了一种在足球界常见做法：把成年人当孩子管——宵禁、没收手机、检查房间。当你这样对待世界顶级职业球员时，她们会反击，因为她们比你更了解这项运动。\n\n> \"我每天面对的是一个不理解静止为何物的世代。这让他们焦虑。我坚持下来，因为我知道，有些建议会在她们日后回想起来时派上用场。声音就在那里，只需要被听到并重视。\"\n\n**美国式橄榄球更衣室**\n\nHayes 去观察美国橄榄球（NFL）更衣室文化，发现球员被当作成年人对待，有尊严，有自主权。女足球员其实也值得同等的尊重。\n\n---\n\n## 领导力原则\n\n1. **杀死独角兽** — 承认你的弱点，用团队弥补，而不是假装完美\n2. **了解你的员工** — 不是你的球员，是你的员工。她们是人，不是机器\n3. **透明与诚实** — 在团队中建立说真话的文化，不因权力压制异议\n4. **拥抱失败** — 最危险的是假装失败不存在\n5. **记住根源** — 她来自伦敦 Camden 区的工人阶级，这让她始终知道自己是谁\n\n---\n\n与其他男性教练的对比在书中占了不少篇幅：\n\n- **Jürgen Klopp** — 情商型教练的典范\n- **Thomas Frank**（布伦特福德）— 把人放在正确位置的管理者\n- **Roberto De Zerbi**（布莱顿）— 战术创新者\n\n她对英国足球近年来的进步很骄傲，但也指出与德国的系统性培养仍有差距。\n\n---\n\n## 对女性运动的态度\n\n> \"虽然男子体育仍然被尼安德特人的态度所困扰，但我相信足球正处在一个代际变革的临界点。越来越多的领导者正在展示他们的人性——因为现代管理期望他们这样做。情感进化就在发生。如果你不善于人际、不善于同理，你最终会被系统吐出去。\"\n\n她特别提到\"只有女性流血（Only Women Bleed）\"这一章，讲述女性运动员面临的特殊挑战——月经周期、怀孕期，都需要不同的管理方式。\n\n---\n\n## 执教成就\n\n| 年份 | 成就 |\n|------|------|\n| 2012 | 出任切尔西女足主帅 |\n| 2015-2020 | 连续五年英超冠军 |\n| 2021 | 率领切尔西夺得欧冠亚军 |\n| 2024 | 出任美国女足国家队主帅 |\n\n---\n\n## 适合谁读\n\n足球教练、女性职场者、任何想要打破\"完美领袖\"神话的领导者，以及想了解这项运动幕后真实故事的球迷。\n\n---\n\n## 中英关键词\n\n- Kill the Unicorn — 杀死独角兽\n- Emotional Intelligence — 情商\n- Team Culture — 团队文化\n- Authenticity — 真实/真诚\n- Leadership — 领导力\n\n*资料来源：Emma Hayes, A Completely Different Game (2024) / Kill the Unicorn (UK Edition)*\n"
+  },
+  {
+    "id": "everything_your_coach_never_told_you_notes",
+    "title": "Everything Your Coach Never Told You",
+    "author": "Dan Blank",
+    "year": "2017",
+    "category": "运动心理",
+    "region": "美国",
+    "tags": [
+      "心智训练",
+      "脏活累活",
+      "承担责任",
+      "青少年"
+    ],
+    "emoji": "🧠",
+    "one_line": "美国青少年足球教练 Dan Blank 写给女足球员的心智训练手册，填补教练不教但其实最重要的那些东西——承担责任、控制可控因素、愿意做脏活累活。这本书非常实用，几乎是\"足球生存手册\"。",
+    "content": "# Everything Your Coach Never Told You / Dan Blank — 精华笔记\n\n**Dan Blank 著**\n\n---\n\n## 一句话\n\n美国青少年足球教练 Dan Blank 写给女足球员的心智训练手册，填补教练不教但其实最重要的那些东西——承担责任、控制可控因素、愿意做脏活累活。这本书非常实用，几乎是\"足球生存手册\"。\n\n---\n\n## 核心思想\n\nDan Blank 在序言中说了一个让人不舒服的真相：很多教练会告诉男球员\"去抢那个球\"，但面对女球员时，他们会说\"小心别受伤\"。\n\n这本书就是要填补这个差距——用直白的语言，告诉女孩们：这个世界上有些规则，是没有人告诉你，但每个人都知道的。\n\n---\n\n## 核心章节\n\n**承担责任（Part 2）**\n\n\"Find Yourself Guilty\"（发现自己有罪）— 这是全书最重要的一章。Dan Blank 认为，失败后第一时间找借口（裁判不公、队友失误、天气太差）是人类的本能，但真正的球员会先问自己：我能做什么不同？\n\n> \"失败是痛苦的。但更痛苦的是假装失败与你无关。\"\n\n**控制可控因素（Part 3）**\n\n\"Control the Controllables\" — 你无法控制裁判、无法控制对手、无法控制天气，但你可以控制自己的态度、自己的努力程度、自己的回应方式。\n\n\"Never Retaliate\" — 对方球员挑衅你了？最好的回应是把球带进他们的球门，不是用拳头。\n\n\"Be Paranoid\" — 永远保持警惕，永远不要觉得领先了就安全了。真正的赢家永远在下一秒钟还在战斗。\n\n**脏活累活（Part 4）**\n\n这是书中最\"硬核\"的部分，也是 Dan Blank 最得意的部分。\n\n\"Be the Bully\" — 在场上要强势。不是说脏话或故意伤人，而是让你的存在本身就让对手感到压力。抢每一个球，冲每一次对抗，让对手知道你不打算让她们舒服。\n\n\"Don't Get Beat Twice\" — 被对手过了一次，绝对不要让同一个动作第二次成功。这是对专注力和学习能力的双重考验。\n\n---\n\n## 给女孩的话（Part 7）\n\n最后一部分专门写给女孩们，这是全书写得最温柔也最直接的部分：\n\n**\"A Piece of the Pie\"（蛋糕的一份）** — 你有权在这个行业里占有一席之地。不要觉得自己是客人，你就是属于这里的。\n\n> \"你不需要被允许才能踢足球。你不需要等待邀请函。走出门去，拿起球，这就是你的权利。\"\n\n---\n\n## 适合谁读\n\n年轻球员（10-20岁）、足球教练、家长，以及任何想在心理层面提升的运动员。\n\n---\n\n## 中英关键词\n\n- Control the Controllables — 控制可控因素\n- Dirty Work — 脏活累活\n- Be the Bully — 成为霸主\n- Take Absolute Responsibility — 承担绝对责任\n\n*资料来源：Dan Blank, Everything Your Coach Never Told You Because You're a Girl (2017)*\n"
+  },
+  {
+    "id": "fifa_benchmarking_2024_notes",
+    "title": "FIFA 2024 女子足球基准报告",
+    "author": "FIFA",
+    "year": "2024",
+    "category": "产业报告",
+    "region": "全球",
+    "tags": [
+      "联赛分级",
+      "薪资",
+      "商业化",
+      "基准"
+    ],
+    "emoji": "📊",
+    "one_line": "FIFA首份全球女子足球基准报告，按职业化程度将全球86个联赛分为三级（Tier 1/2/3），从竞技、治理、财务、球迷参与、数据与数字化、球员六大维度建立基准，帮助各联赛找到自己的参照系和学习对象。",
+    "content": "# FIFA 2024 女子足球基准报告 — 精华笔记\n\n**FIFA Women's Football Benchmarking Report 2024: Setting the Pace**\n*FIFA | 2024年 | 覆盖86个联赛、669个俱乐部*\n\n---\n\n## 一句话\n\nFIFA首份全球女子足球基准报告，按职业化程度将全球86个联赛分为三级（Tier 1/2/3），从竞技、治理、财务、球迷参与、数据与数字化、球员六大维度建立基准，帮助各联赛找到自己的参照系和学习对象。\n\n---\n\n## 报告框架：三级分类\n\n| 等级 | 含义 | 代表联赛 |\n|------|------|---------|\n| **Tier 1** | 职业化程度最高 | 英超WSL、NWSL（美国）、德甲、法甲、西甲Liga F等 |\n| **Tier 2** | 中等职业化 | 瑞典Damallsvenskan、荷兰Eredivisie等 |\n| **Tier 3** | 早期发展阶段 | 部分亚洲、非洲、南美联赛 |\n\n---\n\n## 核心数据\n\n### 财务数据\n\n| 指标 | Tier 1 | Tier 2 | Tier 3 |\n|------|--------|--------|--------|\n| 平均运营收入 | **USD 440万** | USD 23.9万 | USD 7.6万 |\n| 人员成本占比 | **33%** | — | — |\n| 行政成本占比 | 21% | — | — |\n| 比赛日运营成本占比 | 4% | — | — |\n| 有主赞助商的俱乐部比例 | **95%** | 62% | 47% |\n| 无赞助商的俱乐部比例 | 5% | 38% | **53%** |\n\n**其他财务发现**：\n- 62%的联赛获得政府/足协/FIFA资金支持\n- Tier 1平均补贴：**USD 180万**；Tier 3平均补贴：USD 15.7万\n- 过去三年有**3个不同冠军**的联赛，广播收入（USD 32.5万）和赞助商数量（2.8个）明显高于只有1个冠军的联赛\n\n### 球员薪资\n\n| 指标 | 数值 |\n|------|------|\n| 全球平均税前薪资 | **USD 10,900/年** |\n| Tier 1俱乐部平均 | **USD 24,030/年** |\n| 最高薪资俱乐部 | USD 50,000+/年 |\n| 以足球为主要收入的球员比例（Tier 1） | **72%** |\n| 以足球为主要收入的球员比例（Tier 3） | 21% |\n\n- **合同期限**：大多数合同为1-3年；Tier 1中>3年合同比例更高\n- **工资帽**：仅12%的联赛设置了工资帽；设工资帽的联赛球员长期合同比例更高\n\n### 上座率\n\n| 联赛等级 | 平均上座人数 |\n|---------|------------|\n| Tier 1 | **1,713人** |\n| Tier 2 | 480人 |\n| Tier 3 | 380人 |\n\n**典型上座案例**：英格兰61,660人 / 巴西42,326人 / 德国38,365人\n\n**门票平台分布**：\n- Tier 1：OTT（付费点播）最常用\n- Tier 2/3：社交媒体最常用\n\n### 转播与数字化\n\n- 过去三年有3个不同冠军的联赛，广播收入显著更高（USD 32.5万 vs 25.1万）\n- 2024年中期转会窗口，国际转会数量同比增长**32%**，反映球员价值认知提升\n- 数据与数字化能力强的联赛/俱乐部，赞助商数量更多\n- 俱乐部数据驱动球迷互动和商业决策的能力，与上座率正相关\n\n---\n\n## 竞技维度\n\n- **VAR普及率**：仅9%的联赛使用VAR\n- **裁判沟通系统**：55%的联赛使用\n- **女子足球教练**：仅**22%**为女性（各等级差异不大）\n\n---\n\n## 治理维度\n\n| 指标 | 数据 |\n|------|------|\n| 联赛由足协或其附属机构管理 | **91%** |\n| 独立于足协运营的联赛 | 7% |\n| Tier 1俱乐部持证比例 | 75-80% |\n| Tier 3俱乐部持证比例 | ~50% |\n| 持证女裁判比例（全球） | **42%**（Tier 2最高57%，Tier 3最低25%） |\n| 89%的联赛认可足球战略重要性 | 有书面足球战略 |\n\n---\n\n## 球员维度\n\n### 合同与职业化\n\n- **书面合同覆盖率**：Tier 1最高\n- **球员职业化程度**：72%的Tier 1球员以足球为唯一/主要收入来源（Tier 3仅21%）\n- **怀孕支持**：74%的Tier 1俱乐部提供产假；64%提供经济补偿；大多数提供合同延续条款\n\n### 青训体系\n\n顶级俱乐部提供更优质的青训机会，是女子足球人才培养的关键。FIFA将女子足球精英学院作为战略优先事项。\n\n---\n\n## 未来展望\n\n- **2028 FIFA女子足球俱乐部世界杯**：历史上首届全球女子足球俱乐部世界大赛\n- **投资者兴趣升温**：部分联赛/俱乐部开始获得外部投资，但需谨慎评估长期战略一致性\n- 数字化基础设施与赞助商吸引力之间存在强相关性\n\n---\n\n## 建议摘要（FIFA）\n\n| 维度 | 建议 |\n|------|------|\n| 治理 | 所有联赛制定书面女子足球战略 |\n| 球员 | 实施书面劳动合同；设定最低薪资标准 |\n| 球员 | 所有俱乐部制定产假政策（FIFA 2021/2024产假条例） |\n| 球员 | 建立训练指南 |\n| 竞技 | 增加女性裁判、教练、行政人员培训路径 |\n\n---\n\n## 适合谁读\n\n联赛管理者、俱乐部高管、足球政策制定者、研究者，以及希望系统性了解全球女子足球发展现状的人士。\n\n---\n\n*资料来源：FIFA, Women's Football Benchmarking Report 2024: Setting the Pace*\n"
+  },
+  {
+    "id": "fifpro_workload_2024_notes",
+    "title": "FIFPRO 2024 球员工作量监控年报",
+    "author": "FIFPRO",
+    "year": "2024",
+    "category": "产业报告",
+    "region": "全球",
+    "tags": [
+      "工作量",
+      "赛历",
+      "疲劳",
+      "巴黎奥运"
+    ],
+    "emoji": "📅",
+    "one_line": "2023/24赛季，全球女子足球面临两极化困境：**顶级球员赛季出场60+场、飞行距离超过14万公里**；而大多数普通球员赛季平均仅出场33场，大量时间无球可踢。",
+    "content": "# FIFPRO 2024 女子足球球员工作量监控年报 — 精华笔记\n\n**FIFPRO Player Workload Monitoring Women's Football Report 2024**\n*FIFPRO | 2024年发布 | 聚焦 2023/24 赛季*\n\n---\n\n## 一句话\n\n2023/24赛季，全球女子足球面临两极化困境：**顶级球员赛季出场60+场、飞行距离超过14万公里**；而大多数普通球员赛季平均仅出场33场，大量时间无球可踢。\n\n---\n\n## 核心主题\n\n### 高使用率 vs 低使用率：两种极端同时存在\n\nFIFPRO 通过\"PWM（球员工作量监控）平台\"追踪全球300名职业女足球员，发现：\n\n- **高使用率球员**：赛季出场64场（Mariona Caldentey，西班牙/巴塞罗那排名第一），连续作战天数占比高达69%\n- **低使用率球员**：大多数球员赛季仅出场33场，甚至有奥运国脚全年出场不足10场\n\n> \"职业女子足球同时经历两种极端：部分球员被过度使用，而大多数球员却处于低负荷状态。\"\n\n---\n\n## 关键数据\n\n### 2023/24赛季出场王 Top 5\n\n| 排名 | 球员 | 国籍 | 总出场 | 联赛 | 国际俱乐部 | 国家队 | 总分钟数 |\n|------|------|------|--------|------|-----------|--------|---------|\n| 1 | Mariona Caldentey | 西班牙 | 64 | 35 | 11 | 18 | 4,498 |\n| 2 | Athenea del Castillo | 西班牙 | 61 | 33 | 8 | 20 | 4,335 |\n| 3 | Aitana Bonmatí | 西班牙 | 57 | 30 | 11 | 16 | 4,623 |\n| 4 | Ona Batlle | 西班牙 | 56 | 29 | 10 | 17 | 4,946 |\n| 5 | Saki Kumagai | 日本 | 54 | 31 | 8 | 15 | 4,583 |\n\n**值得注意**：前6名中4位来自**巴塞罗那**，该队参加了4项赛事（Liga F、国王杯、女超杯、欧冠），赛程密集。\n\n---\n\n### 连续作战（Back-to-Back）出场\n\n连续作战定义：上一场比赛结束后不足120小时（5天）内再次出场。\n\n- **平均球员**：赛季14场连续作战\n- **Mariona Caldentey**：44场（占赛季总出场68%）\n- **问题**：缺乏充足恢复时间，增加伤病风险，影响球员健康\n\n### 国际飞行距离 Top 5\n\n| 排名 | 球员 | 国籍 | 飞行时间(小时) | 总距离(公里) |\n|------|------|------|--------------|-------------|\n| 1 | Hayley Raso | 澳大利亚 | 190 | 147,498 |\n| 2 | Ellie Carpenter | 澳大利亚 | 186 | 143,077 |\n| 3 | Caitlin Foord | 澳大利亚 | 175 | 135,701 |\n| 4 | Lindsey Horan | 美国 | 172 | 130,992 |\n| 5 | Kyra Cooney-Cross | 澳大利亚 | 171 | 133,346 |\n\n**特别关注**：Top 10中有6位是效力于欧洲俱乐部的澳大利亚国脚，反映了澳女脚\"飞行打工\"的极端处境。\n\n---\n\n## 2024巴黎奥运会：备战差距\n\n奥运会前，各队备战状态差异巨大：\n\n- **大多数参赛球员**：奥运前经历低负荷期\n- **高使用率球员**：奥运前赛季比普通球员多打**30场**\n- **极端案例**：新西兰、巴西、哥伦比亚、尼日利亚奥运阵容中，有人全年出场不足**10场**\n\n这导致各队备战质量严重不平等，球员带着完全不同的身体状态进入奥运赛场。\n\n---\n\n## 各俱乐部球员使用策略对比\n\n分析10家顶级俱乐部（2023/24赛季）：\n\n| 俱乐部 | 赛季总场次 | 使用球员数 | 中位出场时间 |\n|--------|-----------|-----------|-------------|\n| 巴塞罗那 | 48场 | 29人 | 最高 |\n| 里昂 | 40场 | 34人 | 较高 |\n| 巴黎圣日耳曼 | 42场 | 39人 | 558分钟（最低） |\n| 拜仁慕尼黑 | 33场 | 26人 | — |\n| 圣地亚哥波浪（美职联） | 31场 | 26人 | — |\n\n**里昂和巴黎**：使用球员数量多，球员轮换充分（里昂34人，巴黎39人）。\n**巴塞罗那**：成绩最好但球员使用较集中，中位出场时间最高。\n\n---\n\n## 联赛竞争格局：发展不均衡\n\n报告指出全球女子足球联赛发展极不均衡：\n\n- **UEFA和CONCACAF**：近年创立了重大新赛事\n- **部分地区**：联赛职业化标准停滞\n- **美职联（NWSL）**：规模大幅扩张\n- **英格兰WSL**：多年保持相同赛制\n\n> \"竞赛扩张必须伴随着恰当的条件和有意义的标准，而非为扩张而扩张。\"\n\n---\n\n## 竞争平衡性\n\n| 联赛 | 竞争平衡性 |\n|------|-----------|\n| NWSL（美国） | 最均衡（十年数据），球队实力接近 |\n| 多数顶级联赛 | 竞争失衡趋势加剧 |\n| 欧冠 | 顶级俱乐部垄断，近年结局越发一边倒 |\n| 巴萨/切尔西 | 各连续五年垄断国内联赛 |\n\n---\n\n## FIFPRO 三项核心呼吁\n\n1. **解决低负荷问题**：为低使用率球员提供更多比赛机会\n2. **新赛事的条件必须达标**：为高性能运动员提供充足的休息和恢复条件\n3. **联赛标准化**：通过集体谈判协议规范标准，提升竞争力和商业可持续性\n\n---\n\n## 适合谁读\n\n足球管理者、联赛运营者、经纪人、球员经纪人，以及关心女子足球职业化发展的人士。\n\n---\n\n*资料来源：FIFPRO, 2024 Women's Football Player Workload Monitoring Report*\n"
+  },
+  {
+    "id": "forward_notes",
+    "title": "Forward",
+    "author": "Abby Wambach",
+    "year": "2016",
+    "category": "球员自传",
+    "region": "美国",
+    "tags": [
+      "Abby Wambach",
+      "成瘾",
+      "康复",
+      "脆弱"
+    ],
+    "emoji": "📖",
+    "one_line": "美国传奇前锋 Abby Wambach 的自传，每章用一个\"身份标签\"命名——Fraud、Tomboy、Lesbian、Captain、Champion、Addict、Human——坦诚讲述她如何从业余球员一路打到世界冠军，又如何在退役后与酒精成瘾斗争并最终康复。这是一本关于脆弱的力量的书。",
+    "content": "# Forward / Abby Wambach — 精华笔记\n\n---\n\n## 一句话\n\n美国传奇前锋 Abby Wambach 的自传，每章用一个\"身份标签\"命名——Fraud、Tomboy、Lesbian、Captain、Champion、Addict、Human——坦诚讲述她如何从业余球员一路打到世界冠军，又如何在退役后与酒精成瘾斗争并最终康复。这是一本关于脆弱的力量的书。\n\n---\n\n## 核心思想\n\n这本书最震撼的，不是进球和金牌，而是 Wambach 在第21章的坦白：退役后，她陷入了严重的酒精成瘾，最终在2016年公开承认并进入康复中心。\n\n> \"我花了多年时间建造了一个我以为坚不可摧的世界——然后它塌了。成瘾不知道你是谁。它只管把你拖下去。\"\n\n书的结构本身就是主题：一个人的身份标签在不断变化，但最终极的身份是：Human（凡人）。\n\n---\n\n## 故事\n\n**冒充者综合症（Fraud）**\n\n第1章揭示了一个惊人的事实：即使成为了世界冠军，即使进了184个国际进球，Wambach 仍然经常觉得自己是个骗子，不配拥有这些荣誉。她写道，直到退役很久之后，她才真正相信自己属于那个舞台。\n\n**2015世界杯：冠军（Champion）**\n\n第18章讲述了她职业生涯的巅峰——2015年世界杯夺冠。这一次，美国没有在决赛中输给日本。Wambach 终于以队长身份举起了世界杯。\n\n但书中最动人的不是决赛本身，而是在整个征程中，她是如何带领年轻球员们——Alex Morgan、Carli Lloyd、Megan Rapinoe——进入大赛的。\n\n**成瘾与康复（Addict）**\n\n第21章是最难读但也最重要的章节。Wambach 描述了退役后的空虚感——当你整个生命都在为一个目标燃烧，而那个目标突然消失时，会发生什么？\n\n她开始大量饮酒，用酒精填补那个空洞。直到有一天，她意识到自己需要帮助。\n\n2016年，她公开了自己的成瘾问题，进入了康复中心。\n\n---\n\n## 观点\n\n- **成功不等于幸福** — 世界上最有成就的人仍然会感到空洞\n- **身份标签不等于你** — Wambach 在书中用了很多标签来描述自己，但她最终意识到，这些都是身份，不是本质\n- **脆弱不是软弱** — 向世界展示你的裂缝，需要比假装完美更多的勇气\n\n---\n\n## 适合谁读\n\n正在经历职业转型的运动员、与成瘾问题斗争的人，以及希望理解体育明星真实生活的人。\n\n*资料来源：Abby Wambach, Forward: A Memoir (2016)*\n"
+  },
+  {
+    "id": "go_for_the_goal_notes",
+    "title": "Go for the Goal",
+    "author": "Mia Hamm",
+    "year": "1999",
+    "category": "球员自传",
+    "region": "美国",
+    "tags": [
+      "Mia Hamm",
+      "技术教学",
+      "团队哲学",
+      "传奇"
+    ],
+    "emoji": "🎯",
+    "one_line": "美国女足标志性人物 Mia Hamm 的技术教科书 + 人生哲学书，1999年出版时正值她职业生涯的巅峰。这本书既教你如何踢好足球，也教你如何在人生中成为赢家。核心信息：没有\"我\"在 Mia 之中（No \"Me\" in Mia）。",
+    "content": "# Go for the Goal / Mia Hamm — 精华笔记\n\n**Mia Hamm 著 | 1999年**\n\n---\n\n## 一句话\n\n美国女足标志性人物 Mia Hamm 的技术教科书 + 人生哲学书，1999年出版时正值她职业生涯的巅峰。这本书既教你如何踢好足球，也教你如何在人生中成为赢家。核心信息：没有\"我\"在 Mia 之中（No \"Me\" in Mia）。\n\n---\n\n## 核心思想\n\nMia Hamm 是1990年代美国女足的象征——她用158个国际进球、两次世界杯冠军、两块奥运金牌，重新定义了女子体育的可能性。\n\n这本书分三部分：\n1. **心理与态度** — 热爱比赛、团队合作、心态建设\n2. **技术指导** — 停球、传球、盘带、射门、头球、守门\n3. **成为完整球员** — 稳定性、赢家心态、世界杯回忆\n\n---\n\n## 观点\n\n**第一部分：心理与态度**\n\n**\"没有'我'在 Mia 之中\"**\n\n第1章的标题直接点明了 Mia 的哲学：个人荣誉是团队成功的副产品。她说，自己被问到最多次的问题是\"你的目标是什么\"，而她的回答始终是：\"赢得世界杯。\"不是\"我想成为最伟大\"，而是\"我们想赢\"。\n\n**热爱足球（第2章）**\n\nMia 在书中写道，很多年轻球员问她如何保持对足球的激情。她的回答是：享受过程，不要只盯着结果。\"进球当然很棒，但每天早上醒来想去训练场的那一刻，才是最重要的。\"\n\n**第二部分：技术指导**\n\n| 技术 | 要点 |\n|------|------|\n| 停球 | 让球\"睡\"在脚上，不是对抗球，是迎接球 |\n| 传球 | 看接球队友，不是看球；传出队友能接到的球 |\n| 盘带 | 保护球，用身体挡在对手和球之间 |\n| 射门 | 角度、时机、脚法比蛮力更重要 |\n| 头球 | 不要用头顶，用额头——眼睛盯球 |\n\n**第三部分：成为完整球员**\n\n**一致性** — Mia 认为，天赋可以让你在某一天表现出色，但一致性才能让你成为职业球员。\"你不会每天都感觉完美，但你可以每天都努力做到最好。\"\n\n**1999年世界杯回忆** — 书中最精彩的章节之一是1999年世界杯回忆——那届在美国举办的世界杯至今被认为是女足历史上的巅峰时刻。玫瑰碗9万名观众，美国和中国在决赛中相遇。\n\nMia 写道，那场比赛中最难忘的不是一个进球，而是 Brandi Chastain 在点球大战中脱衣庆祝的那一刻——\"那是一个释放，是对压抑了整场比赛的情绪的宣泄。\"\n\n---\n\n## 人生哲学\n\n1. **团队永远大于个人** — 即使你是全世界最著名的女足球员，你的目标也是团队的胜利\n2. **努力比天赋更可靠** — 天赋给你上限，努力决定你能否达到上限\n3. **享受旅程** — 终点是重要的，但沿途的每一天才是真正的足球人生\n4. **尊重对手** — Mia 在书中多次提到中国女足的孙雯，称她是自己见过的最伟大的球员之一\n\n---\n\n## 适合谁读\n\n年轻球员（8-18岁）、足球教练、家长，以及对了解美国1990年代女足黄金时代感兴趣的球迷。\n\n---\n\n## 中英关键词\n\n- No \"Me\" in Mia — 没有\"我\"在 Mia 之中\n- The Mental Game — 心理比赛\n- Consistency — 一致性\n- Champion — 冠军\n\n*资料来源：Mia Hamm, Go for the Goal (1999)*\n"
+  },
+  {
+    "id": "han_duan_notes",
+    "title": "风雨玫瑰",
+    "author": "韩端",
+    "year": "2014",
+    "category": "球员自传",
+    "region": "中国",
+    "tags": [
+      "韩端",
+      "中国女足",
+      "前锋",
+      "铿锵玫瑰"
+    ],
+    "emoji": "🌹",
+    "one_line": "中国女足传奇前锋韩端的成长自述，由韩端口述、体育记者方肇整理成书。风雨中的玫瑰，既美丽又坚韧——这正是中国女足精神的象征。",
+    "content": "# 风雨玫瑰 / 韩端 — 精华笔记\n\n---\n\n## 一句话\n\n中国女足传奇前锋韩端的成长自述，由韩端口述、体育记者方肇整理成书。风雨中的玫瑰，既美丽又坚韧——这正是中国女足精神的象征。\n\n---\n\n## 说明\n\n本书为扫描版 PDF，文本无法通过工具提取。以下内容基于已有的元数据和已知信息整理，是大纲级别的摘要，而非原文引用。\n\n---\n\n## 核心思想\n\n韩端是中国女足\"黄金一代\"之后最具代表性的前锋之一。她的职业生涯跨越了中国女足的兴衰——从1999年世界杯亚军的辉煌，到职业化困境带来的挑战，再到2011年世界杯跌入低谷。\n\n这本书的主题与英文书籍形成有趣的对比：当西方球员在讲述个人主义式的英雄叙事时，中国球员的故事往往更多地与集体、为国效力的荣誉感、以及体制内的挣扎交织在一起。\n\n---\n\n## 内容框架\n\n**第一部分：成长与足球之路**\n\n韩端1983年出生于大连/辽宁，从小展现出过人的足球天赋。她的成长故事反映了中国基层足球训练的普遍模式：体校选拔 → 省队 → 国家队。\n\n与西方球员不同的是，中国球员的成长往往更依赖体制系统，而非家庭或俱乐部的个人投资。\n\n**第二部分：国家队生涯**\n\n韩端在国家队期间，与孙雯、刘爱玲等传奇球员同代或承前启后。她在大连实德等俱乐部效力，是中国女超职业化早期的亲历者。\n\n书中必然会涉及她在世界杯和亚洲杯上的经历，以及中国女足的团队动态。\n\n**第三部分：生存困境**\n\n这是本书最具价值的部分——中国女足的生存现状。\n\n中国女足的待遇问题在2000年代就已经非常突出：与男足的巨大差距、媒体关注度不足、职业生涯短暂、退役后保障不足。韩端在书中以亲历者视角，揭示了这些困境如何影响球员的心态和发展。\n\n---\n\n## 中西对比\n\n| 维度 | 西方球员叙事 | 中国球员叙事 |\n|------|-------------|-------------|\n| 成长路径 | 俱乐部青训/大学体育 | 体制内体校 → 省队 |\n| 激励机制 | 个人荣誉/职业市场 | 为国效力/集体荣誉 |\n| 生存挑战 | 职业联赛不稳定 | 体制保障不足 |\n| 退役转型 | 商业代言/解说 | 体制内安置/转型困难 |\n\n---\n\n## 孙雯与韩端的对比\n\n在 Ann Killion 的《Champions of Women's Soccer》中，孙雯被描述为\"技术与智慧的完美结合\"，1999年世界杯金球+金靴。\n\n韩端与孙雯是同时代球员，但在技术风格上有明显差异：\n- **孙雯**：控球优雅，任意球精准，更像\"指挥官\"型前锋\n- **韩端**：速度快、门前嗅觉灵敏，更像\"刺客\"型前锋\n\n两人的共同点：在物质条件匮乏的时代，都选择了用热爱对抗现实。\n\n---\n\n## 适合谁读\n\n中国球迷、比较研究者、政策制定者，以及想与西方球员叙事对比阅读的足球爱好者。\n\n---\n\n## 相关资料\n\n- **《Champions of Women's Soccer》孙雯章节（第30章）** — 从国际视角看中国女足黄金一代\n- **孙雯 FIFA 世纪最佳球员** — 2000年与 Michelle Akers 并列获此殊荣\n- **中国铿锵玫瑰** — 1999年世界杯亚军，中国女足的标志性称号\n\n*注：因扫描版 PDF 限制，本笔记基于现有元数据整理。*\n*资料来源：韩端 口述，方肇 整理，《风雨玫瑰》*\n"
+  },
+  {
+    "id": "how_to_win_notes",
+    "title": "How to Win",
+    "author": "Dr. Kate Hays",
+    "year": "2019",
+    "category": "运动心理",
+    "region": "美国",
+    "tags": [
+      "运动心理学",
+      "可视化",
+      "成长心态",
+      "压力管理"
+    ],
+    "emoji": "🧠",
+    "one_line": "运动心理学专家 Dr. Kate Hays 写给运动员的成功学手册，从心理层面解答\"如何在压力下发挥最佳水平\"。这是一本有科学依据的实战手册，不是空洞的励志口号。",
+    "content": "# How to Win / Dr. Kate Hays — 精华笔记\n\n**Dr. Kate Hays 著**\n\n---\n\n## 一句话\n\n运动心理学专家 Dr. Kate Hays 写给运动员的成功学手册，从心理层面解答\"如何在压力下发挥最佳水平\"。这是一本有科学依据的实战手册，不是空洞的励志口号。\n\n---\n\n## 核心思想\n\nKate Hays 是运动心理学领域的资深专家，这本书的特点是：每个建议都有心理学研究支撑，每个方法都有具体操作步骤。\n\n她不是简单地说\"相信自己\"，而是解释为什么\"相信自己\"在高压下会失效，然后给出具体的认知训练方法。\n\n---\n\n## 核心概念\n\n**成长心态（Growth Mindset）**\n\n这是全书的基石。Carol Dweck 的研究发现，拥有\"成长心态\"的运动员——相信能力可以通过努力提升——比拥有\"固定心态\"的运动员更能应对挫折。\n\nHays 的核心建议：把\"我失败了\"换成\"我还没成功，但这是一个学习机会\"。\n\n**可视化（Visualization）**\n\nHays 花了一整章讲可视化——不是简单地\"想象成功\"，而是有结构地在脑海中预演比赛场景。\n\n具体步骤：\n1. 在安静的地方坐下\n2. 闭眼，放松全身\n3. 详细想象比赛的场景——场馆、声音、气味\n4. 预演你想要的反应——如何处理压力、如何应对失误\n5. 每次练习5-10分钟\n\n**赛前例行程序（Routine）**\n\n顶级运动员都有稳定的赛前准备习惯。Hays 建议建立自己的\"赛前仪式\"——一系列在每场比赛前重复的动作，让身体和大脑进入比赛状态。\n\n> \"你的赛前例行程序不需要复杂。它只需要对你有效，并且每次都一样。\"\n\n**接受失败**\n\nHays 引用了大量案例说明：最伟大的运动员不是从不失败的人，而是最快从失败中恢复的人。\n\n她建议的\"失败复盘法\"：\n1. 发生了什么？（事实，不是感受）\n2. 我能控制的是什么？（找到可控因素）\n3. 下次有什么不同？（制定具体改进计划）\n\n---\n\n## 主题速览\n\n| 主题 | 核心建议 |\n|------|---------|\n| 目标设定 | 设定过程目标（如何踢），而非结果目标（赢） |\n| 专注力 | 在干扰中保持聚焦的技巧 |\n| 团队动力 | 集体项目的心理建设 |\n| 自我对话 | 内心独白对表现的影响 |\n| 压力管理 | 大赛前的心理状态调节 |\n\n---\n\n## 适合谁读\n\n运动员、教练、学生运动员（准备 NCAA 或职业选拔），以及任何面临高压情境的人——演讲、面试、考试。\n\n---\n\n## 中英关键词\n\n- Growth Mindset — 成长心态\n- Visualization — 可视化/心理预演\n- Pre-game Routine — 赛前例行程序\n- Self-talk — 自我对话\n\n*资料来源：Dr. Kate Hays, How to Win*\n"
+  },
+  {
+    "id": "leah_williamson_notes",
+    "title": "You Have the Power",
+    "author": "Leah Williamson",
+    "year": "2022",
+    "category": "球员自传",
+    "region": "英格兰",
+    "tags": [
+      "Leah Williamson",
+      "队长",
+      "阿森纳",
+      "包容"
+    ],
+    "emoji": "💪",
+    "one_line": "英格兰女足队长 Leah Williamson 的成长之书，从阿森纳青训到2022年欧洲杯冠军队长。书的核心是10条\"相信自己的法则\"——但更打动人的是关于包容、韧性和团队领导力的真实反思。",
+    "content": "# You Have the Power / Leah Williamson — 精华笔记\n\n**Leah Williamson 著**\n\n---\n\n## 一句话\n\n英格兰女足队长 Leah Williamson 的成长之书，从阿森纳青训到2022年欧洲杯冠军队长。书的核心是10条\"相信自己的法则\"——但更打动人的是关于包容、韧性和团队领导力的真实反思。\n\n---\n\n## 核心思想\n\nLeah Williamson 是英格兰女足历史上一个独特的存在——她是真正的\"阿森纳孩子\"，从8岁起就在阿森纳体系里成长，最终成为队长举起欧洲杯。\n\n这本书出版于2022年欧洲杯之后，她说写这本书的初衷是给年轻女孩一个参照物：\"我无法改变我成长的环境，但也许我可以成为别人的灯塔。\"\n\n---\n\n## 章节\n\n**做你热爱的事**\n\nLeah 写道，她小时候最喜欢做的事是在花园里和父亲一起踢球，那时候她从没想过这会成为职业。\"我只是觉得踢球很有趣。这才是最重要的起点。\"\n\n**韧性**\n\n这是她作为队长最重要的一课：韧性不是不摔倒，而是摔倒后爬起来继续走。她在书中讲述了多次受伤的经历，以及如何从每一次挫折中重建信心。\n\n**盟友关系**\n\nLeah 认为，包容性不是口号，是每天的选择。她专门写了关于如何成为好盟友——不是站着说话，而是真的去支持那些声音被忽视的人。\n\n**2022年欧洲杯**\n\n终章讲述了英格兰在温布利击败德国夺冠的历史时刻——87000名观众，女足历史上现场观众最多的比赛之一。\n\n> \"当我们举起奖杯的那一刻，我脑子里只有一个想法：我们真的做到了。英格兰的女孩子终于有了一个可以做梦的时刻。\"\n\n---\n\n## 10条法则\n\n书末附录了10条法则，核心是：\n1. 相信自己——没有人比你更了解你的能力\n2. 不要让别人的恐惧成为你的天花板\n3. 接受失败——它是成功的一部分\n4. 找到你的社群——你不需要独自战斗\n5. 坚持——很多事情的成功只是因为没有放弃\n\n---\n\n## 适合谁读\n\n年轻球员、队长和领导者、体育教育者，以及想支持女儿踢球的家长。\n\n*资料来源：Leah Williamson, You Have the Power (2022)*\n"
+  },
+  {
+    "id": "lioness_notes",
+    "title": "Lioness: My Journey to Glory",
+    "author": "Beth Mead",
+    "year": "2022",
+    "category": "球员自传",
+    "region": "英格兰",
+    "tags": [
+      "Beth Mead",
+      "欧洲杯",
+      "金靴",
+      "母亲"
+    ],
+    "emoji": "🦁",
+    "one_line": "英格兰前锋 Beth Mead 的自传，讲述她如何从北约克郡小镇女孩成长为2022年欧洲杯金靴奖得主的故事。书的灵魂是她的母亲 June——一位患癌去世但从未失去微笑的女性。",
+    "content": "# Lioness: My Journey to Glory — 精华笔记\n\n**Beth Mead 著 | 2022年**\n\n---\n\n## 一句话\n\n英格兰前锋 Beth Mead 的自传，讲述她如何从北约克郡小镇女孩成长为2022年欧洲杯金靴奖得主的故事。书的灵魂是她的母亲 June——一位患癌去世但从未失去微笑的女性。\n\n---\n\n## 核心思想\n\n这本书的故事线极其清晰：\n\n一个在男足队踢球的女孩 → 被国家队排除的低谷 → Sarina Wiegman 的到来 → 2022年欧洲杯每场献给母亲。\n\n所有情节都指向同一个方向：真正的力量来自你所爱的人。\n\n---\n\n## 故事\n\n**母亲与癌症（第5、12章）**\n\nBeth Mead 的母亲 June 在2019年前后确诊癌症。Beth 在欧洲杯的每一场比赛都献给母亲——她在球衣上写下\"Mum's Army\"，在进球后指向天空。\n\n欧洲杯期间，June 的病情急剧恶化。Beth 在比赛和医院之间来回奔波，在最高舞台上完成了人生最好的足球表演。\n\nJune 在 Beth 夺冠后不久去世。\n\n> \"如果说我职业生涯中最辉煌的时刻是举起欧洲杯，那第二辉煌的时刻就是在医院里告诉妈妈我们赢了的那一刻。她笑了，像往常一样。\"\n\n**被国家队排除的低谷（第8、11章）**\n\n在 Hege Riise 担任临时主教练期间，Beth Mead 落选了国家队大名单。这对一个英格兰球员来说几乎是致命的打击——你突然从国家英雄变成了 nobody。\n\n她写道：那段日子里，她每天早上醒来都不知道自己为什么还要继续踢球。\n\n正是这段低谷，让她后来能在 Sarina Wiegman 的体系中爆发——因为她已经没有什么可失去的了。\n\n**Sarina Wiegman 的第一次谈话（第13章）**\n\n2021年 Wiegman 出任英格兰主教练后，第一次与 Beth Mead 进行一对一谈话。\n\nBeth 回忆道：\"她看着我说：'你知道你能在这里的。'\"\n\n就这么简单。没有长篇大论，没有复杂的战术讲解，只是直接的信任。但对一个刚刚跌到谷底的人来说，这句话重建了一切。\n\n---\n\n## 2022年欧洲杯数据\n\n| 比赛 | 对手 | Beth表现 |\n|------|------|---------|\n| 小组赛 | 奥地利 | 助攻 |\n| 小组赛 | 挪威 | 2球+助攻，当选最佳球员 |\n| 小组赛 | 北爱尔兰 | 进球 |\n| 四分之一 | 西班牙 | 助攻 |\n| 半决赛 | 瑞典 | 1球2助攻，当选最佳球员 |\n| 决赛 | 德国 | 冠军 |\n\n**最终：6球5助攻，金靴奖 + 赛事最佳球员**\n\n---\n\n## 引言\n\n> \"我小时候，妈妈用'给你买一只狗'来诱惑我去参加芭蕾舞考试。我通过了。我们得到了那只狗——她叫 Jess。\"\n\n这是 Beth 书中反复出现的主题：母亲的激励方式看似简单，但正是这些小小的奖励让一个孩子愿意去尝试困难的事情。\n\n---\n\n## 适合谁读\n\n喜欢励志体育故事的读者、正在经历职业低谷的运动员、希望理解教练-球员关系的人，以及任何想读一本关于爱与失去的人——这本书讲的不只是足球。\n\n*资料来源：Beth Mead, Lioness: My Journey to Glory (2022)*\n"
+  },
+  {
+    "id": "menstrual_questionnaire_notes",
+    "title": "月经与避孕知识问卷研究",
+    "author": "Larsen et al.",
+    "year": "2025",
+    "category": "运动科学",
+    "region": "澳大利亚",
+    "tags": [
+      "月经",
+      "避孕",
+      "知识评估",
+      "问卷"
+    ],
+    "emoji": "🔬",
+    "one_line": "这是首份开发并验证的月经周期（MC）与激素避孕（HC）知识评估问卷，针对运动员和运动表现支持人员，填补了该领域标准化测量工具的空白。",
+    "content": "# 月经周期问卷研究 — 精华笔记\n\n**The Development of a Valid and Reliable Questionnaire to Measure Menstrual Cycle and Hormonal Contraceptive Knowledge Among Athletes and Sports Performance Support Staff**\n*Brianna Larsen 等 | Scandinavian Journal of Medicine & Science in Sports | 2025年*\n\n---\n\n## 一句话\n\n这是首份开发并验证的月经周期（MC）与激素避孕（HC）知识评估问卷，针对运动员和运动表现支持人员，填补了该领域标准化测量工具的空白。\n\n---\n\n## 研究背景\n\n过去几年，运动员、教练对月经周期如何影响运动表现的研究兴趣大增。然而：\n\n- 大多数运动员认为月经周期影响训练和比赛表现\n- 但**月经周期研究结果常常相互矛盾**\n- 原因之一：运动员和支持人员本身对月经周期知识了解不足\n\n> 研究显示，运动员和运动表现支持人员对月经周期相关知识的了解程度普遍较低。\n\n---\n\n## 研究方法\n\n### 研究对象\n\n| 群体 | 人数 | 定义 |\n|------|------|------|\n| 低知识组（LK） | 156人 | 未接受月经教育的运动员和支持人员 |\n| 高知识组（HK） | 30人 | 接受过月经教育的运动员和支持人员 |\n| 复测样本 | 122人 | 低知识组中完成两次问卷评估信度 |\n\n专家评审团：6位专业人士\n\n### 问卷开发流程\n\n1. **文献综述** → 确定4个知识领域\n2. **专家评审** → 6位专家审查题目清晰度和相关性\n3. **预测试** → 19名运动员和支持人员试填\n4. **正式施测** → LK组156人 + HK组30人\n5. **复测** → 122人2周后重测\n\n---\n\n## 四个知识领域\n\n| 领域 | 内容 |\n|------|------|\n| **正常月经周期功能** | 月经周期各阶段生理机制 |\n| **月经功能障碍** | 闭经、经前综合征、多囊卵巢综合征等 |\n| **口服避孕药** | 作用机制、对运动表现的影响 |\n| **其他激素避孕方式** | 避孕贴片、宫内节育器等 |\n\n---\n\n## 核心结果\n\n### 知识水平差异\n\n| 指标 | 高知识组（HK） | 低知识组（LK） | 效应量 |\n|------|--------------|--------------|--------|\n| 总分 | **43 ± 5** | **28 ± 10** | d = 1.48 |\n\n两组在所有4个知识领域均存在显著差异（p < 0.05）。\n\n> 效应量 d = 1.48 属于**非常大**的差异（d > 0.8 为大效应），说明月经教育的效果非常显著。\n\n### 信度检验\n\n| 信度指标 | 数值 | 评价 |\n|---------|------|------|\n| 重测信度（ICC） | 0.93–0.98 | **优秀** |\n| 内部一致性（Cronbach's α） | 0.93 | **良好**（≥0.7为可接受） |\n\n### 专家评审\n\n- 项目清晰度：专家一致率 > 80%\n- 项目相关性：专家一致率 > 80%\n\n---\n\n## 实际意义\n\n1. **填补工具空白**：这是首个针对运动员月经周期知识的标准评估工具\n2. **可用于教育效果评估**：追踪教育干预前后知识水平变化\n3. **可用于团队筛查**：评估俱乐部/球队整体月经健康素养\n4. **支持个性化管理**：了解运动员自身对月经周期的认知水平\n\n---\n\n## 对女子足球的启示\n\n在女子足球领域，月经周期管理正在成为球员表现和健康的重要组成部分。Emma Hayes 在《A Completely Different Game》中专门用一章（\"Only Women Bleed\"）讨论女性运动员面临的月经周期挑战。\n\n这份问卷工具可以帮助：\n- **俱乐部**：了解球员月经知识水平，制定针对性教育\n- **教练组**：理解球员在生理周期中的身体状态，合理调整训练\n- **医疗团队**：建立月经健康档案，支持个性化干预\n\n---\n\n## 适合谁读\n\n运动医学从业者、女性运动员教练、俱乐部医疗团队、体育科研人员，以及关注女子足球运动员健康的政策制定者。\n\n---\n\n*资料来源：Brianna Larsen et al., Scandinavian Journal of Medicine & Science in Sports, 2025*\n*doi: 10.1111/sms.70167*\n"
+  },
+  {
+    "id": "one_life_notes",
+    "title": "One Life",
+    "author": "Megan Rapinoe",
+    "year": "2020",
+    "category": "球员自传",
+    "region": "美国",
+    "tags": [
+      "Megan Rapinoe",
+      "同工同酬",
+      "社会活动",
+      "平等"
+    ],
+    "emoji": "✊",
+    "one_line": "美国女足传奇 Megan Rapinoe 的自传，核心是三场战斗：在球场上争夺冠军、在法庭上争取同工同酬、在社会上争取正义。这是一本关于运动员如何成为改变世界的力量的记录。",
+    "content": "# One Life / Megan Rapinoe — 精华笔记\n\n---\n\n## 一句话\n\n美国女足传奇 Megan Rapinoe 的自传，核心是三场战斗：在球场上争夺冠军、在法庭上争取同工同酬、在社会上争取正义。这是一本关于运动员如何成为改变世界的力量的记录。\n\n---\n\n## 核心思想\n\nMegan Rapinoe 是这个时代最具标志性的运动员之一——不是因为她的进球（虽然她进了很多），而是因为她拒绝沉默。\n\n她与 Colin Kaepernick 一起单膝下跪抗议警察暴力。她是同工同酬诉讼的公众代言人。她公开谈论 LGBTQ+ 权益、种族平等、投票权。\n\n> \"我们被放在一个必须为某些东西而战的位置上。这对我们来说不新鲜。但当你有队友站在你身后，俱乐部站在你身后，对手球队也站在你身后——这就大不一样了。\"\n\n---\n\n## 三大主题\n\n**同工同酬斗争（The Fight for Equal Pay，第12章）**\n\n2019年，美国女足国家队集体起诉美国足球联合会，要求与男足获得同等报酬。Rapinoe 是这场斗争的核心声音。\n\n书中的描述揭示了一个很多人不知道的事实：男女足的工资差距不仅是\"同工不同酬\"，还包括比赛奖金——美国男足即使在世界杯小组赛出局，拿到的奖金也高于女足打进世界杯决赛的奖金。\n\n**单膝下跪抗议（Kneeling，第14章）**\n\n2016年NFL球员 Colin Kaepernick 开始在奏国歌时单膝下跪，抗议警察暴力。Rapinoe 很快也开始这样做。\n\n这给她带来了巨大代价：爱国主义者攻击她，总统公开批评她，一些赞助商与她保持距离。\n\n> \"有人说我恨美国。不，我单膝下跪正是因为我爱美国。爱得深沉才敢于批评。\"\n\n**哥哥 Brian 的毒瘾（Brian，第4章）**\n\n书中最私人的一章是关于 Rapinoe 的双胞胎哥哥 Brian 的故事。Brian 后来陷入毒瘾，这个阴影一直笼罩着 Megan 的生活。她在书中描写了家庭破碎的痛，也描写了家人如何团结在一起。\n\n---\n\n## 与足球的关系\n\n尽管社会活动是 Rapinoe 最著名的标签，但书中同样记录了她对足球本身的热爱。\n\n**2019世界杯** — 她在法国世界杯的表现堪称完美：两场对阵法国的比赛打入关键球，决赛对荷兰梅开二度，最终赢得金球奖（最佳球员）和金靴奖（最佳射手）。\n\n**里昂岁月（第11章）** — 在职业生涯中期，Rapinoe 加入了法国里昂俱乐部——当时欧洲最强的女足俱乐部。她说那段时间让她从一个\"好球员\"变成了一个\"真正理解比赛\"的球员。\n\n---\n\n## 引言\n\n> \"我们这一代被赋予了平台、声音和机会——这是前几代女性运动员用一生换来的。浪费这些是不尊重她们的牺牲。\"\n\n---\n\n## 适合谁读\n\n关心社会正义的读者、体育与政治交叉议题研究者、正在建立个人品牌的运动员，以及 LGBTQ+ 社群和支持者。\n\n*资料来源：Megan Rapinoe, One Life (2019)*\n"
+  },
+  {
+    "id": "raised_a_warrior_notes",
+    "title": "Raised a Warrior",
+    "author": "Susie Petruccelli",
+    "year": "2021",
+    "category": "球员自传",
+    "region": "美国",
+    "tags": [
+      "Susie Petruccelli",
+      "球员转型",
+      "平权",
+      "教练"
+    ],
+    "emoji": "⚔️",
+    "one_line": "美国早期女足球员 Susie Petruccelli 的自传，记录了她从球员到教练的转型，以及在这个过程中对性别平等问题的深度反思。这是一本关于如何在体制内坚持自我、不被磨灭的故事。",
+    "content": "# Raised a Warrior / Susie Petruccelli — 精华笔记\n\n**Susie Petruccelli 著 | 2021年**\n\n---\n\n## 一句话\n\n美国早期女足球员 Susie Petruccelli 的自传，记录了她从球员到教练的转型，以及在这个过程中对性别平等问题的深度反思。这是一本关于如何在体制内坚持自我、不被磨灭的故事。\n\n---\n\n## 核心思想\n\nSusie Petruccelli 成长于美国女足的早期年代——那个踢球会被邻居指指点点、女孩子踢球被看作\"不正常\"的时代。\n\n她不仅坚持了下来，还成为了一名教练，并获得了 Vikki Orvice Prize（以一位已故英国体育记者命名，表彰在女子体育报道中有突出贡献的女性）。\n\n核心观点：真正的勇士，不是没有恐惧，而是在恐惧中依然选择站出来。\n\n---\n\n## 主题\n\n**从球员到教练的转型**\n\n书中详细描写了 Susie 如何从一名球场上的球员，变成场边指导年轻人的教练。这个转型并不容易——你需要学会从\"做\"到\"教\"，从个人贡献到通过他人成功。\n\n**性别平等的代价**\n\n作为早期球员，Susie 经历了太多性别歧视：得不到赞助、没有职业联赛、待遇远低于男足。她在书中写了很多具体的例子，揭示了体制性歧视如何一点一点磨损运动员的热情。\n\n> \"我学会了一件事：如果你等别人来给你机会，你会等一辈子。自己去创造机会。\"\n\n**职场中的女性**\n\n书中专门探讨了女性在体育界（无论是球员还是管理者）面临的共同困境：缺乏榜样、性别刻板印象、被期待承担更多\"情感劳动\"。\n\n---\n\n## 适合谁读\n\n女性职场者、体育管理者、教练，以及体育史研究者。\n\n*资料来源：Susie Petruccelli, Raised a Warrior (2021)*\n"
+  },
+  {
+    "id": "sinclair_notes",
+    "title": "Playing the Long Game",
+    "author": "Christine Sinclair",
+    "year": "2022",
+    "category": "球员自传",
+    "region": "加拿大",
+    "tags": [
+      "Christine Sinclair",
+      "奥运金牌",
+      "射手王",
+      "耐心"
+    ],
+    "emoji": "🇨🇦",
+    "one_line": "加拿大传奇前锋 Christine Sinclair 的自传，讲述她如何用20年光阴追逐奥运金牌，最终成为国际足联历史射手王。耐心、团队、母亲的影响是核心主题。",
+    "content": "# Playing the Long Game — 精华笔记\n\n**Christine Sinclair 著 | 2022年**\n\n---\n\n## 一句话\n\n加拿大传奇前锋 Christine Sinclair 的自传，讲述她如何用20年光阴追逐奥运金牌，最终成为国际足联历史射手王。耐心、团队、母亲的影响是核心主题。\n\n---\n\n## 核心思想\n\nSinclair 不是那种在镁光灯下讲大话的人。这本书一开篇就说：\"谈论自己从来不是我的风格。\" 但正因为如此，这本书才格外珍贵——它让我们看到了一位沉默的伟大运动员如何用行动而非言语书写历史。\n\n她教会我们三件事：\n- **长期主义** — 不急于求成，用整个职业生涯积累\n- **团队高于个人** — 加拿大队有\"变色\"文化（Chrysalis，蝴蝶蛹的蜕变），每个人都在改变\n- **接受不可控** — 母亲与癌症的抗争让她学会了这一点\n\n---\n\n## 故事\n\n**东京奥运的金牌（2021）**\n\n第1章和第14章都在写2020东京奥运会。加拿大队在半决赛中 3:3 逼平美国，Sinclair 完成了个人第187个国际进球——这是国际足联男女足历史上的最高纪录。最终在点球大战中击败瑞典，夺得金牌。\n\n这枚金牌来之不易：球队在2012伦敦奥运获得铜牌，2016里约连领奖台都没上。正是在低落中，球队开始了真正的蜕变。\n\n> \"这不是漂亮的金牌。也不漂亮。也很接近失败。但这很像我们。\" — 赛后 Sinclair 对媒体说的话\n\n**母亲的车祸（2002）**\n\n第5章讲述了2002年世青赛期间 Sinclair 接到电话：母亲 Sandra 在去看她比赛的路上遭遇严重车祸，头部重伤。那届世青赛她在场上拼命表现，赛后才知道母亲的真实伤势。\n\n母亲的坚韧深刻影响了她：Sandra 一生都在与疾病斗争，从不抱怨，只说\"继续，去踢球\"。\n\n**打破世界纪录的心理历程（第13章）**\n\n追赶 Abby Wambach 的 184 球纪录是巨大的心理负担。Sinclair 一度觉得这个数字会压垮她——每次为国家队上场，压力都在累积。但她最终超越了这个数字，以 190 球成为历史射手王。\n\n> \"我从来没有在追逐数字。我只是在为加拿大进球。这就是我一直以来做的。\"\n\n---\n\n## 关键人物\n\n**Sandra Sinclair（母亲）** — 贯穿全书最重要的人物。Sandra 是一名护士，后来成为不列颠哥伦比亚省第一个获得飞行执照的女护士之一。她面对困难的韧性是 Sinclair 足球人生的原型。\n\n**John Herdman（新西兰/加拿大教练）** — 从带领新西兰两夺奥运铜牌，到接手加拿大并带领她们奥运夺金——Herdman 是 Sinclair 职业生涯中最重要的教练。\n\n**Carolina Morace（意大利教练）** — Sinclair 在意大利职业联赛时期遇到的主教练，要求她打中场而非前锋，这段经历让她成为了更全面的球员。\n\n---\n\n## 变色文化\n\n加拿大队内部有一个词叫\"Chrysalis\"（蝴蝶蛹）。她们相信，每届大赛自己都在蜕变——2012伦敦奥运是一批人，到2020东京奥运是另一批蜕变后的自己。这让她们始终保持饥饿感。\n\n---\n\n## 写作风格\n\nSinclair 与记者 Stephen Brunt 合著了这本书。Sinclair 本人的声音占了大部分，但她不是一个自我戏剧化的人，所以这本书的叙事相对内敛，不一定有其他自传的戏剧张力，但正因为这种克制，真实性更强。\n\n---\n\n## 适合谁读\n\n职业运动员、足球迷、心理学者，以及任何对如何在低谷中坚持感兴趣的人。\n\n---\n\n## 数据\n\n| 数据 | 内容 |\n|------|------|\n| 190球 | 国际足联男女足历史射手王 |\n| 354场 | 加拿大队史出场纪录 |\n| 20年 | 国家队生涯（2000-2024） |\n| 1枚 | 奥运金牌（2020东京） |\n| 14次 | 加拿大足球小姐 |\n\n*资料来源：Christine Sinclair, Playing the Long Game (2022)*\n"
+  },
+  {
+    "id": "soccer_iq_vol1_notes",
+    "title": "Soccer IQ Volume 1",
+    "author": "Dan Blank",
+    "year": "2014",
+    "category": "战术",
+    "region": "美国",
+    "tags": [
+      "战术",
+      "球商",
+      "Smart Player",
+      "位置感"
+    ],
+    "emoji": "📐",
+    "one_line": "Dan Blank 在20年大学执教经验基础上，整理了足球场上最常见的错误，并提供简单、清晰的解决方案。本书定位为\"足球第一本球员教科书\"，旨在缩短学习曲线，让球员更快做出正确决策。",
+    "content": "# Soccer IQ Volume 1 读书笔记\n\n> **Soccer IQ: Things That Smart Players Do, Volume 1**\n> 作者：Dan Blank\n> 核心定位：足球决策智慧入门篇，帮助球员\"用脑子踢球\"\n\n---\n\n## 核心理念\n\nDan Blank 在20年大学执教经验基础上，整理了足球场上最常见的错误，并提供简单、清晰的解决方案。本书定位为\"足球第一本球员教科书\"，旨在缩短学习曲线，让球员更快做出正确决策。\n\n**核心前提**：聪明比天赋更重要。即使技术不如对手，只要决策更聪明，也能赢得比赛。\n\n---\n\n## 八大核心主题\n\n### 1. 比赛速度：快比慢好\n\n**核心观点**：快比慢好，这是足球的基本规律。\n\n- 尽可能一脚出球，必要时两脚出球\n- 在接球之前就做出决定\n- \"球比任何球员都快\"\n- 接到球后立即处理，不要停下来想\n\n**关键金句**：\n> \"Nothing on the field is faster than a moving ball\"\n\n### 2. 传球与接球艺术\n\n**核心观点**：传球时要考虑接球者的需求。\n\n- 传你想接的球（传球的同理心）\n- 进入正确的接球角度\n- 用远离压迫方向的脚接球\n- 两次跑动迷惑防守：一次佯攻，一次真正接应\n\n**常见错误**：\n- 传\"不可能的球\"——那些队友根本无法接到的球\n- 不移动就等球\n- 传球后不跑位接应\n\n### 3. 足球智慧与空间意识\n\n**核心观点**：聪明球员在球到达之前就做出90%的决策。\n\n- 保持\"头部在旋转\"——不断扫描全场\n- 问自己三个问题：\n  - **\"如果呢？\"**（如果我这样处理会怎样？）\n  - **\"接下来呢？\"**（下一步是什么？）\n  - **\"我身后呢？\"**（身后有什么威胁？）\n\n- 观察对手的身体语言，尤其是眼神\n- 阅读比赛的发展趋势\n\n### 4. 欺骗与主动跑动\n\n**核心观点**：不要被动等球，要主动创造机会。\n\n- 接球前做假动作\n- 无眼神传球来隐藏意图\n- 主动跑动告诉队友你想要球的位置\n- 前锋要 proactive（主动），让队友知道何时何地要球\n\n**关键金句**：\n> \"Smart forwards are proactive and they let their teammates know where and when they want the ball.\"\n\n### 5. 防守心态与技术\n\n**核心观点**：防守时限制对手比直接抢球更重要。\n\n- 封住对手的惯用脚，可以限制很多球员\n- 拿球时不要转身面对压迫\n- 解围时要越过第一波压迫\n- 追防对手时切断回传球路线\n\n**重要原则**：\n> \"Never turn into pressure when in possession\"（拿球时绝不转身面对压迫）\n\n### 6. 定位球与重启球策略\n\n**核心观点**：定位球是比赛的黄金机会。\n\n- 当对手还没组织好时，快速发出任意球/角球\n- 在点球和任意球时争抢第二落点\n- 根据风向调整角球/任意球策略\n- 掷界外球时，立即把球放到头后方准备快发\n\n**关键技巧**：\n- 角球时争抢第一和第二落点\n- 任意球时人墙后面的球员要准备好\n\n### 7. 适应各种比赛条件\n\n**核心观点**：聪明球员会根据环境调整打法。\n\n**大风天气**：\n- 保持低球\n- 把防守线压得更靠前\n\n**雨天场地**：\n- 预判球的弹跳和打滑\n- 注意第一落点\n\n**顺风时**：\n- 充分利用优势\n- 避免传过顶球\n\n**关键金句**：\n> \"When the field gets overrun with standing water, it's no longer about pretty soccer. It's about territory.\"\n\n### 8. 时钟管理与制胜战术\n\n**核心观点**：比赛末段的管理决定胜负。\n\n**领先时**：\n- 不帮对手捡球\n- 利用角球和边线消耗时间\n- 避免把球交到对方守门员手中\n\n**落后时**：\n- 快速发出定位球\n- 逼迫守门员拿球\n- 最后几分钟敢于冒险\n\n---\n\n## 关键概念速查\n\n| 概念 | 核心要点 |\n|------|---------|\n| **快比慢好** | 一脚出球 > 两脚出球 > 停球想 |\n| **三问法则** | 如果呢？接下来呢？我身后呢？ |\n| **传球同理心** | 传你想接的球 |\n| **主动前锋** | 让队友知道你要什么 |\n| **封惯用脚** | 限制对手的关键技术 |\n| **不转身压迫** | 拿球时绝不转身面对防守 |\n| **争抢第二落点** | 定位球时准备二次进攻 |\n\n---\n\n## 阅读启示\n\n本书适合：\n- 各级别足球爱好者建立战术基础认知\n- 青少年球员缩短学习曲线\n- 教练用来讲解基础战术概念\n\n核心阅读方法：每章都是独立主题，可以随时查阅。建议反复阅读\"三问法则\"和\"速度优先\"这两个核心理念。\n\n---\n\n*笔记整理自原书内容概要。如需深入学习，请购买原版支持作者。*\n"
+  },
+  {
+    "id": "soccer_iq_vol2_notes",
+    "title": "Soccer IQ Volume 2",
+    "author": "Dan Blank",
+    "year": "2016",
+    "category": "战术",
+    "region": "美国",
+    "tags": [
+      "战术",
+      "球商",
+      "防守",
+      "进攻"
+    ],
+    "emoji": "📐",
+    "one_line": "Dan Blank 在 Volume 1 提出\"比赛速度\"是最重要因素。本卷在此基础上深化，指出**速度的真正价值在于创造人数优势**。全书通过50+个短章节（每章3-5页），阐述足球场上的智慧决策。",
+    "content": "# Soccer IQ Volume 2 读书笔记\n\n> **Soccer IQ: Things That Smart Players Do, Volume 2**\n> 作者：Dan Blank\n> 核心定位：足球战术智慧进阶篇，专注攻防转换与空间创造\n\n---\n\n## 核心理念\n\nDan Blank 在 Volume 1 提出\"比赛速度\"是最重要因素。本卷在此基础上深化，指出**速度的真正价值在于创造人数优势**。全书通过50+个短章节（每章3-5页），阐述足球场上的智慧决策。\n\n---\n\n## 核心战术概念\n\n### 1. 魔法数字：2v1\n\n**核心观点**：足球运动中，没有比人数优势更大的优势。最低数字组合（进攻方）是最好的；最高数字组合（防守方）是最有利的。\n\n- 2v1 可以迅速转化为 1v0\n- 进攻时保持最大速度，让防守方来不及回防\n- 识别和创造 2v1 机会是赢得比赛的关键\n\n### 2. 跳过一层\n\n**核心观点**：进攻时应考虑球队的分层结构（守门员→后卫→防守中场→进攻中场→前锋）。\n\n- 传球时尝试\"跳过一层\"到更靠前的队友\n- 这样既推进了比赛，又为下一步创造选择\n- 防守方往往会在中路堆积人数，跳层传球可以绕过这种压迫\n\n### 3. 选择更高的选项\n\n**核心观点**：当你有短传和长传两个选择时，选择更远的传球。\n\n- 长传可以打散对方的压迫\n- 接应者收到长传后，身边已经有\"下一传\"的选项\n- 短传来回往往原地踏步\n\n---\n\n## 进攻智慧\n\n### 4. 抢球后第一时间行动\n\n**核心观点**：丢球后的5秒是夺回球权的最佳时机。\n\n- 对方拿球瞬间还在想着进攻，没准备好防守\n- 这个时机要果断加速上抢\n- 不是每次都能抢下来，但能逼迫对方犯错\n\n### 5. 提前冲刺\n\n**核心观点**：当球还在空中飞行时就要开始冲刺，而不是等球落地。\n\n- 如果你用85%速度\"几乎够到\"球，那用冲刺速度就肯定能拿到\n- 关键视觉信号：对方要接的球难度越大（空中球、旋转球、场地不平），第一触球越可能失误\n- 接到高难度球后的失误，不要给她第二次机会\n\n### 6. 延迟冲刺（能量管理）\n\n**核心观点**：不是所有时刻都值得冲刺。\n\n- 对方拿球但还没控好时，是冲刺的好时机\n- 对方已完全控好、正面看你时，不是冲刺的好时机\n- 被突破后的回追有时反而帮助对方拉开空当\n\n### 7. 回报队友\n\n**核心观点**：队友突破过人后，你应该立即插上接应，而不是站在原地欣赏。\n\n- 最好的进攻时机是对方还没来得及布防\n- 过人者最需要的支持是接应点，让她有传球选择\n- 不要让过人的努力白费\n\n### 8. 要有所收获\n\n**核心观点**：被逼到边线或底线时，如果没机会传中，就想办法赢得界外球或角球。\n\n- 把球踢到对方小腿上折射\n- 聪明的球员会诱导防守者跟到角落，然后利用身体弹开对方赢得角球\n- 界外球总比丢球好\n\n### 9. 延迟角球/任意球\n\n**核心观点**：比赛末段的角球和任意球，不要急着开。\n\n- 30秒是非常充裕的时间\n- 先确保最佳头球选手进入禁区并站稳位置\n- 仓促开出只会让对方轻松解围\n\n### 10. 跑位时机\n\n**核心观点**：前锋回撤接应边后卫的传球时，要\"晚启动、快到达\"。\n\n- 不要过早回撤，否则会压缩空间\n- 等队友控好球后再开始回撤\n- 先向外跑拉开距离，然后全速回撤接应\n- 这样能接到更深的位置，更靠近对方球门\n\n---\n\n## 防守智慧\n\n### 11. 越位的责任\n\n**核心观点**：边锋在对方后卫线后等球时，保持不越位是完全可控的。\n\n- 你能看到所有后卫和球，完全没有越位的借口\n- 这是最基本的比赛意识\n- 这种失误会让全队努力白费\n\n### 12. 后撤防守的视觉信号\n\n**核心观点**：识别对方中场的\"预判动作\"来判断是否要后撤。\n\n- 对方中场大脚向前长传前的准备动作\n- 看到信号后立即后撤，不能犹豫\n- 越早识别信号，越有时间准备\n\n### 13. 争抢解围球\n\n**核心观点**：前锋有责任在解围球落地时第一时间争抢。\n\n- 对方进攻时，前锋容易放松\n- 当球被解围到前场时，这是缓解压力的黄金机会\n- 保持专注，不要错过解围球\n- 能控住第一落点的前锋是无价之宝\n\n---\n\n## 训练建议\n\n每章末尾都有针对教练的训练建议，包括：\n- 小场地对抗赛（2v2、3v3、4v4）\n- 四目标控球游戏\n- 位置感训练\n- 冲刺时机训练\n\n---\n\n## 关键金句\n\n1. \"最好的夺球时机是丢球后的五秒内\"\n2. \"接高难度球后的失误，不要给她第二次机会\"\n3. \"30秒是非常充裕的时间，不要慌张\"\n4. \"当你几乎能拿到球时，全力冲刺肯定能拿到\"\n5. \"人数优势是足球运动中最重要的优势\"\n\n---\n\n## 阅读启示\n\n本书适合：\n- 各级别球员提升战术意识\n- 教练用来讲解具体战术概念\n- 想要\"用脑子踢球\"的足球爱好者\n\n核心阅读方法：每一章都可以单独阅读，重点理解作者传达的核心观点，然后想象在比赛中遇到类似情况时该如何处理。\n\n---\n\n*笔记整理自原书，仅供个人学习使用。如需深入学习，请购买原版支持作者。*\n"
+  },
+  {
+    "id": "soccerwomen_notes",
+    "title": "Soccerwomen",
+    "author": "Gemma Clarke",
+    "year": "2016",
+    "category": "综合",
+    "region": "全球",
+    "tags": [
+      "百科全书",
+      "历史",
+      "30+人物",
+      "先驱"
+    ],
+    "emoji": "🌍",
+    "one_line": "一本按时代划分的女足百科全书，每章介绍一位标志性人物——从19世纪末的先驱者到2020年代的新星。这是一部用人物串联起来的全球女足发展史。",
+    "content": "# Soccerwomen / Gemma Clarke — 精华笔记\n\n**Gemma Clarke 著**\n\n---\n\n## 一句话\n\n一本按时代划分的女足百科全书，每章介绍一位标志性人物——从19世纪末的先驱者到2020年代的新星。这是一部用人物串联起来的全球女足发展史。\n\n---\n\n## 核心思想\n\n这本书最巧妙的地方是它的结构：不是按国家或俱乐部划分，而是按时间线横向串联，让读者看到不同时代的女性如何在相似的困境中做出不同的选择。\n\n五个时代：\n1. **走出阴影（1890s-1980s）** — 在足球被禁止的时代偷偷踢球\n2. **从骨感到球衣（1990s）** — 首届世界杯，职业化的曙光\n3. **独立联盟（2000s）** — WUSA 崛起与失败，女足的第一次商业化尝试\n4. **为平等而战（2010s）** — 同工同酬、运动参与、社会正义\n5. **未来是女性（2020s）** — NWSL、FA WSL，职业化真正到来\n\n---\n\n## 跨越时代的对比\n\n**孙雯 vs Marta vs Rose Lavelle**\n\n书中第30章写孙雯（Sun Wen）——1999年世界杯金球奖+金靴奖，与美国传奇 Michelle Akers 并列 FIFA 世纪最佳球员。孙雯代表了亚洲女足的优雅与智慧。\n\n巴西的 Marta 在书中被称为\"6次 FIFA 最佳球员\"，她重新定义了女子足球的可能性——不只是\"女性版男子足球\"，而是一种独特的、观赏性极高的足球风格。\n\n美国的 Rose Lavelle 代表了新一代：技术细腻、创造性强、个性鲜明。她在2019年世界杯决赛的进球被评为赛事最佳进球。\n\n三代球员，三种不同的足球哲学，共同推动这项运动向前。\n\n---\n\n## 代表人物\n\n| 人物 | 国籍 | 时代 | 标志性成就 |\n|------|------|------|-----------|\n| Lily Parr | 英格兰 | 1920s | 打破男女足进球纪录 |\n| Nettie Honeyball | 英格兰 | 1890s | 创建世界上第一支女足俱乐部 |\n| Alice Milliat | 法国 | 1920s | 推动国际足联接受女子足球 |\n| Michelle Akers | 美国 | 1990s | 首届世界杯 MVP，105球 |\n| Mia Hamm | 美国 | 1990s | 全球最具商业价值的女足球员 |\n| Marta | 巴西 | 2000s | 6次 FIFA 最佳球员 |\n| Abby Wambach | 美国 | 2010s | 184球历史纪录 |\n| Sam Kerr | 澳大利亚 | 2020s | 澳洲女足的全球代言人 |\n\n---\n\n## 全书主题\n\n**为什么她们要踢球？**\n\n每个时代、每个国家的球员都有自己的理由：纯粹的爱、对平等的渴望、为下一代铺路。但有一个共同点——她们都克服了某种形式的阻力才站到球场上。\n\n**女性运动员 vs 社会期望**\n\n书中多次描写了女性运动员面临的独特困境：结婚生子后的回归、家庭与职业的平衡、社会对\"女性应该做什么\"的偏见。\n\n---\n\n## 中国关联\n\n孙雯在书中被描述为\"技术与智慧完美结合\"的代表。她的任意球、场上视野、在压力下的冷静，让一代中国球迷爱上了这项运动。\n\n1999年世界杯中美决赛，是中国球迷至今津津乐道的经典。\n\n---\n\n## 适合谁读\n\n足球历史爱好者、研究者、球迷，以及想了解孙雯等中国传奇的世界地位的学生写作者。\n\n*资料来源：Gemma Clarke, Soccerwomen*\n"
+  },
+  {
+    "id": "solo_notes",
+    "title": "Solo: A Memoir of Hope",
+    "author": "Hope Solo",
+    "year": "2012",
+    "category": "球员自传",
+    "region": "美国",
+    "tags": [
+      "Hope Solo",
+      "门将",
+      "争议",
+      "家庭"
+    ],
+    "emoji": "🧤",
+    "one_line": "美国传奇门将 Hope Solo 的自传，既是一部体育史诗，也是一份关于家庭创伤、争议与人性的深度剖析。她的故事不适合心脏脆弱的人。",
+    "content": "# Solo: A Memoir of Hope — 精华笔记\n\n**Hope Solo 著 | 2012年**\n\n---\n\n## 一句话\n\n美国传奇门将 Hope Solo 的自传，既是一部体育史诗，也是一份关于家庭创伤、争议与人性的深度剖析。她的故事不适合心脏脆弱的人。\n\n---\n\n## 核心思想\n\nHope Solo 是公认的足球天才——她的扑救能力、场上阅读能力、身体素质，让她成为女足历史上最伟大的门将之一。但这本书不是关于这些的。\n\n这本书记录的是一个人如何在充满裂缝的原生家庭中长大，然后在聚光灯下一次次崩溃又一次次站起来的经历。\n\n---\n\n## 故事\n\n**父亲的真面目（第1-3章）**\n\nHope Solo 出生在华盛顿州的 Richland，父亲 Ronnie 是一名退伍军人。但在 Hope 成长的过程中，父亲总是缺席——因为他频繁进出监狱。\n\n> \"我父亲对我说：'我应该很久以前就死了。'\"\n\n这句话在第7章再次出现，成为理解整本书的钥匙。Hope 从小在父亲缺席与母亲独自支撑家庭的缝隙中长大。但她也发现父亲在监狱里其实一直在读诗、写日记——这与她从小被灌输的\"父亲是坏人\"形象完全不同。\n\n2007年世界杯前夜，Hope 接到电话：父亲去世了。\n\n**2007世界杯的门将风波（第10-12章）**\n\n这是整本书中最有争议也最令人心碎的部分。\n\n半决赛对巴西，主教练 Greg Ryan 将 Solo 换下，派上了老将 Briana Scurry。Solo 在场边看着球队以0:4惨败。\n\n赛后，她没有沉默，而是直接对媒体说：\"教练做出了一个错误的决定。\"\n\n这句话引发了一场风暴——媒体狂轰滥炸，教练界的人批评她不尊重权威，她的队友也分裂成两派。一夜之间，Solo 成了美国最不受欢迎的运动员之一。\n\n> Solo 写道：\"我职业生涯中最好的朋友在那一刻与我断绝了关系。\"\n\n但她没有道歉。她不后悔说出真话，即使付出代价。\n\n**2011世界杯：史诗般的救赎（第14章）**\n\n四年后，同样的世界杯四分之一决赛，美国再次面对巴西。这一次，Solo 在球门前站了整整120分钟。比赛在最后一刻被扳平，进入加时，再进入点球大战。\n\n点球大战中，Solo 扑出了巴西队的第一个点球——那个时刻，她几乎是在用身体宣告：我回来了。\n\n虽然最终美国在点球大战中输给了日本，但这场比赛被认为是 Solo 职业生涯最伟大的时刻之一。\n\n**2012伦敦奥运：金牌的救赎（第20-21章）**\n\n决赛对日本，Solo 完成了职业生涯最重要的一场比赛——零封对手，赢得奥运金牌。那一刻，所有争议都被金牌的荣光所覆盖。\n\n> \"我花了四年时间学会一件事：不要让任何人偷走你的快乐。\"\n\n---\n\n## 主题\n\n**原生家庭的创伤** — 这本书最独特的地方在于它没有回避 Solo 家族中最丑陋的部分：父亲的犯罪史、酒精问题、家庭暴力传闻。Solo 在书中坦诚讲述这些，因为她相信，只有直面这些，才能解释她性格中那些让很多人无法理解的\"刺\"。\n\n**守门员的孤独** — Solo 用了大量篇幅描写作为守门员的独特感受：\"你一个人站在球门前，全世界都在你身后看你是否能阻止那个球。没有人能帮你。这是一种极致的孤独感。\"\n\n**争议与真实** — Solo 从不试图让所有人喜欢她。她在书中承认自己的不足——脾气暴躁、不善于妥协、说话太直——但她坚持：这就是我，我不会为了被喜欢而改变。\n\n---\n\n## 争议事件\n\n| 年份 | 事件 |\n|------|------|\n| 2007 | 公开批评教练，被禁赛半年 |\n| 2012 | 伦敦奥运金牌，职业生涯巅峰 |\n| 2014 | 家庭暴力指控，最终被判缓刑 |\n| 2016 | 奥运后宣布退出国家队 |\n\n---\n\n## 适合谁读\n\n足球迷、心理学爱好者、女性职场者，以及任何对争议人物的真实故事感兴趣的读者。\n\n---\n\n## 中英关键词\n\n- Solo: A Memoir of Hope — 《Solo：希望的回忆录》\n- Keeper — 守门员\n- The Storm — Solo 为自己在书中描写的内心风暴\n- Redemption — 救赎\n- Authenticity — 真实（她在这本书里没有美化自己）\n\n*资料来源：Hope Solo, Solo: A Memoir of Hope (2012)*\n"
+  },
+  {
+    "id": "the_national_team_notes",
+    "title": "The National Team",
+    "author": "Caitlin Murray",
+    "year": "2019",
+    "category": "综合",
+    "region": "美国",
+    "tags": [
+      "美国女足",
+      "内部史",
+      "薪酬斗争",
+      "性别平权"
+    ],
+    "emoji": "🇺🇸",
+    "one_line": "美国女足国家队（USWNT）从1980年代创立到2019年的内部全景史，既是足球史，也是性别平权斗争史。",
+    "content": "# The National Team — 精华笔记\n\n**Caitlin Murray 著 | 2019年**\n\n---\n\n## 一句话\n\n美国女足国家队（USWNT）从1980年代创立到2019年的内部全景史，既是足球史，也是性别平权斗争史。\n\n---\n\n## 核心主题\n\n这本书最动人的地方不在进球和冠军，而是揭示了一支球队如何同时打两场仗：一场在球场上对抗对手，另一场在球场外对抗体制。\n\n三条主线：\n- 足球实力的积累（1991→1999→2015→2019四届世界杯）\n- 球员与教练之间的张力和权力斗争\n- 同工同酬的法律战争\n\n---\n\n## 最震撼的故事\n\n**\"她们就是往前冲\"**\n\n瑞典教练 Pia Sundhage 接手美国队时，观察到一个在欧洲球队上看不到的特质。她说：\"在瑞典，我们谈论进攻、防守、站位……但美国人有另一个特质——她们就是往前冲（they just go for it）。\"\n\nMarta 被记者问为什么美国队如此难打败，她指了指头说，记者以为她在夸美国的头球，Marta 立刻纠正：\"不，不，是心态（mentality）。\"\n\n**122分钟的奇迹（2011世界杯）**\n\n2011年世界杯四分之一决赛，美国对阵巴西。全场比赛越打越绝望——Buehler 被红牌罚下，Marta 连连得分，进入加时赛后美国落后 1:2，距离被淘汰只剩不到一分钟。\n\nRapinoe 在右路接到球，没有走近路，而是横向奔跑，甩了一脚长达50码的传球飞向后点。Wambach 守候在那里，眼睛紧盯着球，等待、等待……一跃而起，头球将球送入网窝。2:2。\n\n那一刻，全美国的电视机前响起同样的吼叫。这被认为是美国足球史上最重要的进球之一。\n\n**\"这是她们的球队\"**\n\n美国女足的文化不是由教练创造的，而是由球员自己建立的。老将们比所有教练待得都久，她们才是那个\"框架\"的守护者。\n\n> \"这种文化真正来自球员，因为她们，坦白说，比所有教练都活得更长。她们是指引一切的力量。这真的是她们的球队。\" — 前队员 Danielle Slaton\n\n---\n\n## 内部风暴与争议\n\n**April Heinrichs 时代（2000-2004）**\n\nMia Hamm 退役前，球队内部陷入深刻矛盾。教练 April Heinrichs 执行军事化管理——严格宵禁、大量体能训练、限制球员训练中触球次数——这批已经是世界冠军的老将们忍无可忍。\n\n以 Brandi Chastain 为首的老将们向教练递交了一封正式信件要求辞职。信中说：我们不认为您有能力胜任这份工作，您已经疏远了太多球员。Heinrichs 最终离职。\n\n**同工同酬战（2016-2022）**\n\n球队集体起诉美国足协商别歧视。经过多年法律战，2022年终于达成和解，美国足同意为男女队提供平等薪酬。\n\n---\n\n## 核心观察\n\n- 体制即使坏的，球员也能赢。球队经历了多位能力参差的教练，但每次都靠球员自己的文化凝聚力挺过去。\n- WUSA职业联赛2003年破产，WPS 2012年解散——美国女足职业化之路并不平坦，每一次商业失败都打断了球员的职业规划。\n- 1999年玫瑰碗决赛90,185名观众创造了女足历史纪录，改变了公众对女子体育的认知。\n\n---\n\n## 人物\n\n- **Mia Hamm** — 1990s精神领袖，158球，两届世界杯冠军\n- **Brandi Chastain** — 1999英雄，决赛点球入网后脱衣庆祝\n- **Abby Wambach** — 2010s核心，122分钟绝平巴西，184球国际进球纪录\n- **Carli Lloyd** — 2015传奇，决赛16分钟帽子戏法\n- **Megan Rapinoe** — 最近代表，2019世界杯金球+金靴，同工同酬代言人\n- **Pia Sundhage** — 瑞典教练，带队理念\"就是往前冲\"\n\n---\n\n## 中国关联\n\n1999年世界杯决赛，美国对中国——这是孙雯的时代。中国女足那届表现极其出色，孙雯获得金球+金靴，最终在点球大战中惜败美国。这场比赛是双方都无法忘记的高光时刻。\n\n*资料来源：Caitlin Murray, The National Team (2019)*\n"
+  },
+  {
+    "id": "uefa_menstrual_consensus_notes",
+    "title": "UEFA 月经周期追踪共识声明",
+    "author": "UEFA医学专家组",
+    "year": "2025",
+    "category": "运动科学",
+    "region": "欧洲",
+    "tags": [
+      "月经周期",
+      "追踪",
+      "Delphi",
+      "诊断标准"
+    ],
+    "emoji": "🔬",
+    "one_line": "UEFA发布首份女子足球月经周期追踪共识声明，明确了为什么要追踪、怎么追踪、以及追踪过程中的伦理边界，为女子足球科学化生理管理奠定基础。",
+    "content": "# UEFA 月经周期追踪共识声明 — 精华笔记\n\n**UEFA Consensus Statement on Menstrual Cycle Tracking in Women's Football**\n*Evert Verhagen 等 | BMJ Open Sports & Exercise Medicine | 2025年*\n*经 Delphi 专家共识法，22位多学科专家参与，覆盖欧洲、北美、南美、大洋洲*\n\n---\n\n## 一句话\n\nUEFA发布首份女子足球月经周期追踪共识声明，明确了为什么要追踪、怎么追踪、以及追踪过程中的伦理边界，为女子足球科学化生理管理奠定基础。\n\n---\n\n## 背景\n\n月经周期对女子足球运动员的影响正受到越来越多的关注。然而：\n\n- **月经周期对运动表现的实证研究结论不一**\n- 球员对自身周期模式的理解差异巨大\n- 文化因素、体育环境中对讨论月经的禁忌，使得追踪面临特殊挑战\n- 现有研究统计方法不足，难以检测有意义的影响\n\n---\n\n## 共识方法：Delphi 流程\n\n| 轮次 | 提出声明 | 达成共识 | 删除 | 措辞修改 |\n|------|---------|---------|------|---------|\n| 第一轮（线上） | 85条 | 44条 | 20条 | 26条 |\n| 第二轮（线上） | 29条 | 18条 | — | — |\n\n**最终共识**：22位多学科专家（含运动医学、妇科、教练、数据科学家）经过两轮投票+线下讨论，形成最终建议。\n\n---\n\n## 核心共识声明\n\n### 1. 追踪的价值\n\n月经周期追踪可以帮助球员**更好地了解自己的身体**，识别正常与异常模式，以及相关的身心症状，支持球员进行症状管理和健康优化。\n\n### 2. 追踪的内容\n\n需追踪的核心数据：\n- **月经周期长度**（天数）\n- **排卵时间**\n- **卵巢激素波动**（可用基础体温、宫颈黏液等方法推断）\n\n### 3. 追踪的方法要求\n\n- 月经周期追踪**可能支持球员的健康和知识**，但需注意潜在风险\n- 数据收集必须**自愿参与**\n- 需建立**严格的保密机制**，确保数据安全\n- 考虑文化差异——在某些文化中公开讨论月经仍是禁忌\n\n### 4. 潜在的负面影响与风险\n\n声明特别强调了追踪可能带来的风险：\n\n- **团队选择偏见**：球员担心月经信息影响上场机会\n- **人际伤害风险**：敏感信息可能被滥用\n- **文化障碍**：在一些环境中公开讨论月经存在压力\n- **对负面后果的恐惧**：担心被评判\n\n> **因此，在启动追踪之前，球员应接受全面的月经健康教育，并明确了解追踪的目的和潜在益处。**\n\n### 5. 统计分析建议\n\n- 应使用**具有足够统计效力**的方法来检测有意义的影响\n- 需制定**缺失数据处理策略**（如球员未报告时的处理方法）\n- 月经周期阶段可作为**分类变量**（卵泡期 vs 黄体期）或**连续变量**（激素水平）进行分析\n- 建议使用**混合效应模型**来控制个体差异\n\n### 6. 多因素整合\n\n月经周期不应单独考虑，应综合以下因素：\n- 营养状况\n- 睡眠质量\n- 压力水平\n- 训练强度\n\n---\n\n## 与女子足球的直接关联\n\n### Emma Hayes 的实践\n\nEmma Hayes 在《A Completely Different Game》中专章\"Only Women Bleed\"指出：女性足球运动员面临月经周期带来的特殊挑战，包括：\n- 训练和比赛期间的身体不适\n- 需要不同的球员管理方式\n- 月经周期对恢复和备战的影响\n\n### 实际应用建议\n\n| 场景 | 建议 |\n|------|------|\n| 俱乐部管理 | 为球员提供月经健康教育；在训练计划中考虑周期模式 |\n| 球员本人 | 追踪自身周期，识别规律与异常；主动与教练/医疗团队沟通 |\n| 医疗团队 | 建立月经档案；识别功能障碍（如闭经）；制定个性化干预方案 |\n| 数据收集 | 使用标准化工具（如前述Larsen问卷）；确保数据隐私 |\n\n---\n\n## 重要立场\n\n- 当前证据**尚不足以确认或否认**月经周期与伤病风险、表现提升之间的明确关系\n- 但追踪本身对于**球员自我认知和健康管理**有独立价值\n- **自愿原则**和**知情同意**是不可动摇的前提\n\n---\n\n## 适合谁读\n\n女子足球教练、医疗团队、俱乐部管理层、运动科学家、研究者，以及关注女性运动员生理健康的政策制定者。\n\n---\n\n*资料来源：Verhagen E et al., BMJ Open Sports & Exercise Medicine, 2025*\n*doi: 10.1136/bmjsem-2025-002769*\n"
+  },
+  {
+    "id": "under_the_lights_notes",
+    "title": "Under the Lights and in the Dark",
+    "author": "Gwendolyn Oxenham",
+    "year": "2016",
+    "category": "综合",
+    "region": "全球",
+    "tags": [
+      "普通球员",
+      "生存状态",
+      "纪实",
+      "全球视角"
+    ],
+    "emoji": "📷",
+    "one_line": "前杜克大学球员 Gwendolyn Oxenham 的纪实作品，通过多位球员的真实故事展现全球女足的生存状态——世界杯冠军只是极少数，大多数球员在球场之外还要打工谋生。这是一部关于热爱的代价的记录。",
+    "content": "# Under the Lights and in the Dark / Gwendolyn Oxenham — 精华笔记\n\n---\n\n## 一句话\n\n前杜克大学球员 Gwendolyn Oxenham 的纪实作品，通过多位球员的真实故事展现全球女足的生存状态——世界杯冠军只是极少数，大多数球员在球场之外还要打工谋生。这是一部关于热爱的代价的记录。\n\n---\n\n## 核心思想\n\nOxenham 既是前职业球员，也是作家和纪录片导演。她没有选择聚焦金字塔顶端的故事，而是把镜头对准了中间层和底层——那些踢不上世界杯、靠兼职维持足球梦想的普通球员。\n\n核心问题：**为什么明知道收入微薄、看不到出路，这些人还要继续踢球？**\n\n答案在每一个故事里都不一样，但最终都指向同一个词：热爱。\n\n---\n\n## 主题\n\n**打工踢球族**\n\n书中描写了大量美国低级别联赛（USL W-League、WPSL）球员的生活：她们早上训练，下午去当兼职教练、保姆或服务员，晚上回家还要看比赛录像分析自己的表现。\n\n这与 NWSL 顶级球员的生活方式形成了鲜明对比——即使是最顶级的美国女足球员，薪资也远低于同龄男性球员。\n\n**全球差异**\n\nOxenham 在书中做了真正的\"田野调查\"——她走访了巴西、西班牙、尼日利亚、冰岛等国家，与当地球员交谈。\n\n- **巴西**：即使有 Marta 这样的全球巨星，女子足球在当地仍被视为\"不适合女性的运动\"\n- **北欧（冰岛/瑞典）**：相对成熟的女足体系，职业化程度更高\n- **非洲**：来自尼日利亚等国的球员需要克服重重障碍才能走向欧洲联赛\n- **美国**：拥有最成熟的大学体系，但职业路径依然狭窄\n\n**世界杯效应（2015年）**\n\n2015年加拿大世界杯观看人数创历史纪录。但 Oxenham 在书中提出了一个令人不安的问题：赛后，这些关注度能转化为实质性的改变吗？\n\n她描写了世界杯结束后球员们的普遍感受：庆祝了一周，然后回到各自的公寓，继续为下个月的房租发愁。\n\n---\n\n## 引言\n\n> \"我问过很多球员：'如果知道你只能踢到30岁，永远无法靠踢球过上体面的生活，你还会开始吗？'几乎每个人的回答都是：'会。'这不是愚蠢，这是选择。\"\n\n---\n\n## 与其他书的对比\n\n| 书籍 | 聚焦 |\n|------|------|\n| *The National Team* | 美国国家队巅峰 |\n| *Forward (Wambach)* | 顶级球员的内心世界 |\n| *Under the Lights* | 普通和中间层球员的真实生活 |\n\n---\n\n## 适合谁读\n\n关心体育公平性的读者、体育政策研究者、希望了解职业化真实代价的人，以及任何在理想和现实之间挣扎的人。\n\n*资料来源：Gwendolyn Oxenham, Under the Lights and in the Dark (2018)*\n"
+  },
+  {
+    "id": "what_it_takes_notes",
+    "title": "What It Takes",
+    "author": "Sarina Wiegman",
+    "year": "2022",
+    "category": "教练",
+    "region": "荷兰/英格兰",
+    "tags": [
+      "Sarina Wiegman",
+      "欧洲杯",
+      "信任",
+      "包容性领导"
+    ],
+    "emoji": "👁️",
+    "one_line": "荷兰裔教练 Sarina Wiegman 的自传，记录她如何带领荷兰夺得2017欧洲杯、打进2019世界杯决赛，再率领英格兰夺得2022欧洲杯的历史征程。这是一本关于信任、放手与包容的领导力之书。",
+    "content": "# What It Takes — 精华笔记\n\n**Sarina Wiegman 著**\n\n---\n\n## 一句话\n\n荷兰裔教练 Sarina Wiegman 的自传，记录她如何带领荷兰夺得2017欧洲杯、打进2019世界杯决赛，再率领英格兰夺得2022欧洲杯的历史征程。这是一本关于信任、放手与包容的领导力之书。\n\n---\n\n## 核心思想\n\nSarina Wiegman 是历史上第一位率队夺得世界杯（男足或女足）冠军的荷兰教练。她的成功不是靠个人魅力，而是靠建立一种让每个人都感到归属的文化。\n\n核心哲学：**团队精神高于个人，包容性带来力量，放手才能走得更远。**\n\n---\n\n## 故事线\n\n**从荷兰到英格兰（第五章）**\n\n2019年世界杯荷兰获得亚军后，英格兰足总向她发出邀请。\n\n她形容当时的纠结：\"这是我第一次真正需要权衡我作为人和作为教练的身份。\"\n\n最终她接受了这个机会，开始学习英语，适应英格兰的文化和足球体系。这个转变并不容易，但她做到了。\n\n**2022年欧洲杯：把足球带回家（第六章）**\n\nEngland, It's Coming Home —— 这句口号在英格兰男足身上喊了30年，2019年才由男足实现。但 Wiegman 带领英格兰女足在2022年完成了这个使命。\n\n> 她在书中写道：\"我只是想让我遇到的每个人都感到重要。这不是关于你赢得什么，而是你如何赢得。\"\n\n**如何处理期待的重压（第三章）**\n\n2019年世界杯决赛，荷兰对阵美国。这是她执教的巅峰时刻，但也是压力最大的时刻。荷兰举国上下都在看着她是否能夺冠。\n\n\"期待的重压，有时候比比赛本身更难应对。\"\n\n---\n\n## 教练哲学\n\n1. **包容性（Inclusion）** — 让队里每个人都有归属感，无论主力还是替补\n2. **放手（Letting Go）** — 给予球员信任，让她们自己找到答案\n3. **享受比赛（Enjoyment）** — 足球应该是快乐的，不是恐惧\n4. **数据与直觉结合** — 她非常重视分析，但也相信直觉\n5. **持续改进** — 永不满足，总是在寻找进步的空间\n\n---\n\n## 领导风格\n\nWiegman 被描述为\"直接但温暖\"——她会直接告诉球员她想要什么，但她也真的会倾听球员的声音。\n\nBeth Mead 在自己的自传中描写了第一次与 Wiegman 的会面：\"她直接看着我，说：'你知道你能来这里。' 从那一刻起，一切都不同了。\"\n\nWiegman 自己的书中也有呼应——她相信，每个球员都需要感觉到自己被看见。\n\n---\n\n## 适合谁读\n\n足球教练、领导者、体育管理者，以及对欧洲女足崛起故事感兴趣的读者。\n\n*资料来源：Sarina Wiegman, What It Takes*\n"
+  }
+];
+const catLabels={'球员自传':'球员自传','教练':'教练手记','运动心理':'运动心理','战术':'战术教学','综合':'综合历史','产业报告':'产业报告','运动科学':'运动科学'};
+let curFilter='all',curTag='',curSearch='';
+
+function init(){renderNav();renderTagCloud();renderHome()}
+function renderNav(){const n=document.getElementById('navBar');let h='<button class="nav-btn active" data-cat="all" onclick="filterCat(\'all\',this)">全部</button>';Object.keys(catLabels).forEach(c=>{const cnt=books.filter(b=>b.category===c).length;h+=`<button class="nav-btn" data-cat="${c}" onclick="filterCat('${c}',this)">${catLabels[c]} (${cnt})</button>`});n.innerHTML=h}
+function filterCat(c,el){curFilter=c;curTag='';document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));if(el)el.classList.add('active');renderHome()}
+function filterTag(t){curTag=t;curFilter='all';document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));renderHome()}
+function renderTagCloud(){const c=document.getElementById('tagCloud');const ts=[...new Set(books.flatMap(b=>b.tags))].sort();c.innerHTML=ts.map(t=>`<button class="tag-btn" onclick="filterTag('${t}')">${t}</button>`).join('')}
+function renderCards(items){return items.map(b=>`<div class="card" onclick="showDetail('${b.id}')"><div class="card-emoji">${b.emoji}</div><div class="card-title">${b.title}</div><div class="card-meta">${b.author}${b.year?' | '+b.year:''}${b.region?' | '+b.region:''}</div><div class="card-desc">${b.one_line}</div><div class="card-tags">${b.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div></div>`).join('')}
+
+function renderHome(){
+  const s=document.getElementById('categorySections');
+  let filtered=books;
+  if(curTag){filtered=books.filter(b=>b.tags.includes(curTag));s.innerHTML=`<div class="search-info">话题 "<strong>${curTag}</strong>" 相关的 ${filtered.length} 条结果</div><div class="card-grid">${renderCards(filtered)}</div>`;return}
+  if(curFilter!=='all'){filtered=books.filter(b=>b.category===curFilter);s.innerHTML=`<div class="search-info">${catLabels[curFilter]} - ${filtered.length} 条</div><div class="card-grid">${renderCards(filtered)}</div>`;return}
+  const g={};filtered.forEach(b=>{if(!g[b.category])g[b.category]=[];g[b.category].push(b)});
+  let h='';const order=['球员自传','教练','运动心理','战术','综合','产业报告','运动科学'];
+  order.forEach(c=>{if(g[c])h+=`<div class="category-section"><div class="category-title">${catLabels[c]}</div><div class="card-grid">${renderCards(g[c])}</div></div>`});
+  s.innerHTML=h;
+}
+
+function showDetail(id){const b=books.find(x=>x.id===id);if(!b)return;document.getElementById('homeView').style.display='none';document.getElementById('detailView').style.display='block';document.getElementById('navBar').style.display='none';window.scrollTo(0,0);document.getElementById('detailHeader').innerHTML=`<div class="detail-emoji">${b.emoji}</div><div class="detail-title">${b.title}</div><div class="detail-meta">${b.author}${b.year?' | '+b.year:''} | ${catLabels[b.category]||b.category}${b.region?' | '+b.region:''}</div><div class="detail-desc">${b.one_line}</div><div class="detail-tags">${b.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>`;document.getElementById('detailContent').innerHTML=marked.parse(b.content)}
+
+function showHome(){document.getElementById('homeView').style.display='block';document.getElementById('detailView').style.display='none';document.getElementById('navBar').style.display='flex';document.getElementById('searchInput').value='';curSearch='';window.scrollTo(0,0);renderHome()}
+
+function handleSearch(q){curSearch=q.trim().toLowerCase();if(!curSearch){curFilter='all';curTag='';document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.querySelector('.nav-btn[data-cat="all"]').classList.add('active');renderHome();return}const r=books.filter(b=>{const t=(b.title+b.author+b.one_line+b.tags.join(' ')+b.content).toLowerCase();return t.includes(curSearch)});document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.getElementById('categorySections').innerHTML=`<div class="search-info">搜索 "<strong>${q}</strong>" 找到 ${r.length} 条结果</div><div class="card-grid">${renderCards(r)}</div>`}
+
+window.addEventListener('scroll',()=>{document.getElementById('backTop').classList.toggle('visible',window.scrollY>400)});
+document.addEventListener('keydown',e=>{if(e.key==='/'&&document.activeElement.tagName!=='INPUT'){e.preventDefault();document.getElementById('searchInput').focus()}if(e.key==='Escape'){if(document.getElementById('detailView').style.display!=='none')showHome();else{document.getElementById('searchInput').value='';showHome()}}});
+init();
+</script>
+</body>
+</html>
