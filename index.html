@@ -84,7 +84,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hira
   <div id="homeView">
     <div class="home-intro">
       <h1>世界女足知识库</h1>
-      <p>精选 28 本全球女足经典专著 + 9 份权威产业科研报告与学术研究 + 主教练采访精华笔记。覆盖球员传记、教练哲学、运动心理、战术分析和产业报告。</p>
+      <p>精选 30 本全球女足经典专著 + 9 份权威产业科研报告与学术研究 + 主教练采访精华笔记。覆盖球员传记、教练哲学、运动心理、战术分析和产业报告。</p>
       <div class="stats">
         <div class="stat"><div class="stat-num">28</div><div class="stat-label">本专著</div></div>
         <div class="stat"><div class="stat-num">9</div><div class="stat-label">份报告</div></div>
@@ -5750,7 +5750,240 @@ function renderHome(){
   if(curTag){filtered=books.filter(b=>b.tags.includes(curTag));s.innerHTML=`<div class="search-info">话题 "<strong>${curTag}</strong>" 相关的 ${filtered.length} 条结果</div><div class="card-grid">${renderCards(filtered)}</div>`;return}
   if(curFilter!=='all'){filtered=books.filter(b=>b.category===curFilter);s.innerHTML=`<div class="search-info">${catLabels[curFilter]} - ${filtered.length} 条</div><div class="card-grid">${renderCards(filtered)}</div>`;return}
   const g={};filtered.forEach(b=>{if(!g[b.category])g[b.category]=[];g[b.category].push(b)});
-  let h='';const order=['球员自传','教练','运动心理','战术','综合','产业报告','指南'];
+  let h='';const order=['球员自传','教练','运动心理','战术','综合','产业报告','指南',
+  {
+    "id": "powerhouse_notes",
+    "title": "Powerhouse: 13 Teamwork Tactics",
+    "author": "Kristine Lilly",
+    "year": 2019,
+    "category": "球员自传",
+    "region": "美国",
+    "tags": ["团队战术", "领导力", "USWNT", "TEAM框架"],
+    "emoji": "⚡",
+    "one_line": "354场纪录保持者提炼的TEAM框架13条高绩效团队战术——从转型、赋能、达成到激励",
+    "content": `# Powerhouse: 13 Teamwork Tactics that Build Excellence and Unrivaled Success
+
+> 作者：Kristine Lilly（with Lynette & John Gillis Jr.）| 出版：2019 Greenleaf Book Group | 分类：球员自传/团队领导力
+
+---
+
+## 一句话
+
+以美国女足传奇 Kristine Lilly（354次出场纪录保持者）23年国家队生涯为主线，提炼出 TEAM 四大支柱下的 13 条高绩效团队战术——既是回忆录也是可迁移的团队建设方法论。Mia Hamm 作序，含 Alex Morgan 与 Megan Rapinoe 对话。
+
+---
+
+## 作者
+
+Kristine Lilly — USWNT 历史出场次数最多球员（354场），16岁入选即进球（最年轻进球者），效力23年（1987-2011），5届世界杯+3届奥运会。同时保持最年轻+最年长进球纪录。2015年入选美国足球名人堂。从锋线打到边后卫，推动现代攻击型边后卫演变。
+
+---
+
+## TEAM 四大支柱与 13 条战术
+
+### 支柱一：TRANSFORM（转型）
+
+**Tactic 1 - Selecting Exceptional Team Members**
+- 团队效能取决于成员技能的集合性与互补性
+- USWNT 选拔极其残酷——为热爱也为生计而战
+- 老将责任：带新人入队，展示专业态度
+- Brandi Chastain："每个团队都有自己的性格，必须接受成员的差异"
+
+**Tactic 2 - Aligning the Team Direction**
+- Alex Morgan：世界前十差距缩小，需要更多策略和战术准备
+- 了解队友优缺点，填补团队需要的角色
+- "到达最高舞台时必须把 selfish 需求放在一边"
+- 个人目标与 team goal 对齐时互相放大
+
+**Tactic 3 - Scoring a Goal**
+- 目标需可量化指标追踪进度
+- Kristine 每月都有具体个人训练目标
+- 区分角色和责任，明确绩效预期
+
+### 支柱二：EMPOWER（赋能）
+
+**Tactic 4 - Setting the Team Foundation**
+- 领导力不仅是选最好球员，更在于管理 ego 和个性
+- 心理 skill 教练帮助理解彼此差异
+- "无论首发还是替补，每个人都感到被支持"
+
+**Tactic 5 - Leading the Team**
+- 队长 = 团队的 voice，了解团队的 pulse
+- 确保每个人的声音被 heard
+- 不为了 speak 而 speak —— 每句话都要 meaning 和 purpose
+
+**Tactic 6 - Serving on International Teams**
+- Megan Rapinoe 在法国里昂：欧洲文化 insular vs 美国 camaraderie
+- NWSL 外籍球员融入经验
+
+### 支柱三：ACHIEVE（达成）
+
+**Tactic 7 - Learning Teamwork**
+- 从 Lil 身上学到 professional + positive + fun
+- Balance art：有时让新人自己 grind through
+
+**Tactic 8 - Communicating within the Team**
+- 找到自己的 role 和 voice
+- 不能太多人同时 speak —— need balance
+- Abby Wambach 离开后 team 自然推举新 leader
+
+**Tactic 9 - Handling Team Conflict**
+- Best way：player to player 直接解决
+- 牵扯太多人 → conflict 变成 black hole
+
+### 支柱四：MOTIVATE（激励）
+
+**Tactic 10 - Creating Team Chemistry**
+- 1999 世界杯决赛经典案例：90,000 audience 前 PK 战 5罚全中
+- Kristine 门线 header clear + Brandi 脱衣 celebration
+- Chemistry 来自 consistent series of actions
+
+**Tactic 11 - Cultivating the Team Ethos**
+- Team 像一个 brain，每个 member 是 extension
+- 可以看到 team 如何 grow、如何 struggle through
+
+**Tactic 12 - Seizing a Winning Mentality**
+- Megan Rapinoe motto："Be something special that no one else can be"
+- 把 unique 带给 team，不要 compare
+- Resist temptation of comparison
+
+**Tactic 13 - Doing What Is Right**
+- 1995 落选 USWNT → 1996 回归被迫改踢 back
+- 不因 pride 拒绝，而是 embrace change
+- **帮助开创 modern attacking fullback 先河**
+
+---
+
+## 核心金句
+
+> "Scoring your first goal makes you feel like belong. Scoring your last goal makes you feel like you still belong."
+> ——Kristine Lilly (2015 HOF 入驻 speech)
+
+> "I was a member of a team, and I relied on the team. I defer to it and sacrifice for it, because the team, not the individual, is the ultimate champion."
+> ——Mia Hamm
+`
+  }
+  ,
+  {
+    "id": "vision_of_a_champion_notes",
+    "title": "The Vision of a Champion",
+    "author": "Anson Dorrance \u0026 Gloria Averbuch",
+    "year": 2002,
+    "category": "教练手记",
+    "region": "美国",
+    "tags": ["青训", "UNC王朝", "竞争文化", "教练哲学", "Competitive Cauldron"],
+    "emoji": "🏆",
+    "one_line": "UNC 22冠王朝缔造者的教练全书——竞争大熔炉与冠军愿景定义",
+    "content": `# The Vision of a Champion: Advice and Inspiration from the World's Most Successful Women's Soccer Coach
+
+> 作者：Anson Dorrance & Gloria Averbuch | 出版：2002 Huron River Press | 372页 | 序言：Mia Hamm
+
+---
+
+## 一句话
+
+北卡 UNC 女足创始主帅 Anson Dorrance 的教练哲学全书——从 1979 年创立项目到缔造 22 个 NCAA 全国冠军的完整方法论。核心概念"竞争大熔炉"（Competitive Cauldron）重新定义了什么是 champion mindset。
+
+---
+
+## 书名由来（核心理念）
+
+> "The vision of a champion is someone who is bent over, drenched in sweat, at the point of exhaustion when no one else is watching."
+>
+> ——Anson Dorrance 写给 1992 年大四 Mia Hamm 的 note
+
+这句话后来成为 Mia Hamm 自传《Go for the Goal》的开篇。
+
+---
+
+## 作者
+
+Anson Dorrance — UNC 女足 founding head coach（1979起），NCAA 史上 most successful coach 之一。执教 USWNT 夺得 1991首届世界杯冠军。培养了 Mia Hamm、Kristine Lilly、Carla Overbeck、Cindy Parlow 等一代代传奇。
+
+---
+
+## 全书结构：四大支柱
+
+### 第一部分：UNC 之路
+- **王朝诞生**：1980 自费游说 AIAW 创办 women's soccer championship
+- Manipulate photo angle 制造 packed illusion —— marketing awareness day one
+- 1990-1996 NCAA women's soccer participation growth 120%
+
+### 第二部分：攀登足球阶梯
+- Technical/tactical development path / 各级别比赛意义 / 进入大学足球完整指南
+
+### 第三部分：技术支柱——训练 ⭐
+
+**第12章 竞争大熔炉（The Competitive Cauldron）— 核心概念**
+
+> "Soccer is basically a struggle between the ones who want it and the ones who don't. Every single duel is a statement of who wants more more."
+
+- UNC 项目 most defining feature
+- **Competitive instinct 不是天赋而是 discipline 和 desire driven ——人人可拥有**
+- 经典案例：Meredith Florance 前三年 ranking 13/15/14 → 第四年跃升 #3 → Honda Award + 第17冠
+- 她"只是 decided to flip the switch" —— 这种 transition 人人可达
+- **Competition 既能 measure people 也能 develop people**
+
+**第13章 Competitive Matrix** — quantified daily competition ranking system
+
+### 第四部分：战术支柱——比赛
+
+**第17章 Being a Team Player** ⭐
+
+**Classic case —— 1996 Olympics SF vs Norway**：
+- Tiffany Roberts 整届 Olympic没上场却被派去 mark Hege Riise
+- Shannon MacMillan 被 sub → sub 后 second touch 就打入 winner
+- **"谁说 attitude 不是一切？"**
+
+**Female vs Male Players 差异（Dorrance 总结）**：
+
+| 维度 | 女性 | 男性 |
+|------|------|------|
+| Coach style | Need humanity; scream 和 lose them | Direct approach works |
+| Game style | More flow, less foul, more possession | Faster but more stoppage |
+| Sportsmanship | Stronger sense of honor/fairness | Sometimes cross the line |
+| Key lesson | "They don't need force of my personality; they need my humanity" | — |
+
+Dorrance early aggressive/critical style worked with men but **disastrous with women**
+
+### 第五部分：身体支柱——体能
+
+UNC 典型一周结构：
+- Sun: match | Mon: rest | Tue: fitness (individual + mutual support)
+- Wed: 1v1 + small-sided games (personal influence on winning)
+- Thu-Sat: back to team concept + bonding training
+- 每次 pregame talk 都以 **group unity** 结束
+
+### 第六部分：心理支柱——心态
+
+**Carla Overbeck 论 leadership**：
+- 不必 extrovert 才能 lead（她 childhood shy/homebody）
+- Leadership first step：在场上发出 sound
+- **"Why are girls so silent on field? Want to be liked, don't want to seem bossy"**
+- Tone 极其重要 —— constant screaming 不是 effective leading
+
+---
+
+## Core Concepts 速查
+
+| Concept | Definition |
+|---------|-----------|
+| **Competitive Cauldron** | UNC signature training environment — daily high-intensity competition ranking |
+| **Competitive Matrix** | Quantify every training session performance and rank |
+| **Vision of a Champion** | Go all out when nobody is watching |
+| **Gray/Green 系统** | USWNT veteran/newcomer inheritance mechanism |
+| **Carry Each Other** | "If you struggle, person next to you carries you" |
+
+---
+
+## Mia Hamm Foreword 精华
+
+- **Tradition passed down class by class**：在 Carolina play 是 privilege
+- **Tracey Bates Leone 是 UNC spirit 的化身**：Cooper test 中一边跑一边 encourage freshman，sacrifice 自己节奏帮别人 pass，最后30秒 sprint 才勉强通过
+- **Beyond athletics 的 power**：比 sports 更 powerful 的是 deep friendships formed there
+`
+  }
+];
   order.forEach(c=>{if(g[c])h+=`<div class="category-section"><div class="category-title">${catLabels[c]}</div><div class="card-grid">${renderCards(g[c])}</div></div>`});
   s.innerHTML=h;
 }
