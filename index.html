@@ -5734,24 +5734,7 @@ Morgan 在 Preface 中坦承："我希望这本书帮助你发现追求梦想的
 - 系列：World Book Sports Stars / Black Rabbit Books
 - 页数：约40页`
   }
-];
-const catLabels={'球员自传':'球员自传','教练':'教练手记','运动心理':'运动心理','战术':'战术教学','综合':'综合历史','产业报告':'产业报告','指南':'指南'};
-let curFilter='all',curTag='',curSearch='';
-
-function init(){renderNav();renderTagCloud();renderHome()}
-function renderNav(){const n=document.getElementById('navBar');let h='<button class="nav-btn active" data-cat="all" onclick="filterCat(\'all\',this)">全部</button>';Object.keys(catLabels).forEach(c=>{const cnt=books.filter(b=>b.category===c).length;h+=`<button class="nav-btn" data-cat="${c}" onclick="filterCat('${c}',this)">${catLabels[c]} (${cnt})</button>`});n.innerHTML=h}
-function filterCat(c,el){curFilter=c;curTag='';document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));if(el)el.classList.add('active');renderHome()}
-function filterTag(t){curTag=t;curFilter='all';document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));renderHome()}
-function renderTagCloud(){const c=document.getElementById('tagCloud');const ts=[...new Set(books.flatMap(b=>b.tags))].sort();c.innerHTML=ts.map(t=>`<button class="tag-btn" onclick="filterTag('${t}')">${t}</button>`).join('')}
-function renderCards(items){return items.map(b=>`<div class="card" onclick="showDetail('${b.id}')"><div class="card-emoji">${b.emoji}</div><div class="card-title">${b.title}</div><div class="card-meta">${b.author}${b.year?' | '+b.year:''}${b.region?' | '+b.region:''}</div><div class="card-desc">${b.one_line}</div><div class="card-tags">${b.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div></div>`).join('')}
-
-function renderHome(){
-  const s=document.getElementById('categorySections');
-  let filtered=books;
-  if(curTag){filtered=books.filter(b=>b.tags.includes(curTag));s.innerHTML=`<div class="search-info">话题 "<strong>${curTag}</strong>" 相关的 ${filtered.length} 条结果</div><div class="card-grid">${renderCards(filtered)}</div>`;return}
-  if(curFilter!=='all'){filtered=books.filter(b=>b.category===curFilter);s.innerHTML=`<div class="search-info">${catLabels[curFilter]} - ${filtered.length} 条</div><div class="card-grid">${renderCards(filtered)}</div>`;return}
-  const g={};filtered.forEach(b=>{if(!g[b.category])g[b.category]=[];g[b.category].push(b)});
-  let h='';const order=['球员自传','教练','运动心理','战术','综合','产业报告','指南',
+,
   {
     "id": "powerhouse_notes",
     "title": "Powerhouse: 13 Teamwork Tactics",
@@ -6005,6 +5988,23 @@ UNC 典型一周结构：
     "content": `# Soccer, Women, Sexual Liberation: Kicking Off a New Era\n\n> 编者：Fan Hong（洪帆）& J.A. Mangan | 出版：Frank Cass Publishers, 2004 | 系列：Sport in the Global Society | ~280页 | 学术编著（论文集）·15国/地区 · 序言 + 尾声\n\n---\n\n## 核心主旨\n\n**全球首部系统性跨国比较女足发展史。** 通过15个国家案例，揭示一个核心悖论：\n\n> **女足在最不需要\"让路于男足\"的国家最成功。**\n\n美国、挪威、中国——这三个女足传统强国恰恰是男足处于次要地位的国家。而在男足构成\"霸权体育文化\"的核心足球国家（德国、英格兰、巴西等），女足的发展反而长期受阻。\n\n书名\"Sexual Liberation\"（性解放）并非指狭义的性行为自由，而是引用 Marina Warner 的论点——女性运动员对自身身体的自主权。女足场上的每一次突破都是对\"怪物化管理\"(Managing Monsters)这一父权叙事的解构。\n\n---\n\n## 全书结构\n\n| 章节 | 国家/地区 | 作者 | 核心议题 |\n|------|----------|------|---------|\n| Prologue | 全球 | J.A. Mangan | \"Managing Monsters\"——父权叙事与媒体商业化的双刃剑 |\n| Introduction | 全球 | Donna de Varona | 5M框架：Myths/Management/Marketing/Media/Money |\n| Ch1 | 美国 | Markovits & Hellerman | \"美国例外主义\"——霸权体育文化理论 |\n| Ch2 | 加拿大 | M.Ann Hall | \"首选运动\"——从1920年代到Pellerud时代 |\n| **Ch3** | **中国** | **Fan Hong & Mangan** | **\"铿锵玫瑰能永远绽放吗？\"** |\n| Ch4 | 韩国 | Eunha Koh | \"枷锁、挑战与变革\" |\n| Ch5 | 印度 | Boria Majumdar | \"进退之间\"——以《我爱贝克汉姆》为切入点 |\n| Ch6 | 丹麦 | Brus & Trangbæk | \"争取比赛的权利\"——BK Femina俱乐部史 |\n| Ch7 | 英国 | Jean Williams | \"增长最快的运动？\" |\n| Ch8 | 德国 | Gertrud Pfister | \"东西德比较研究\"（含东德宣传漫画） |\n| Ch9 | 挪威 | Kari Fasting | \"小国大成就\"——数据驱动的挪威模式 |\n| Ch10 | 爱尔兰 | Ann Bourke | \"往事与未来\" |\n| Ch11 | 瑞典 | Hjelm & Olofsson | \"突破\" |\n| Ch12 | 新西兰 | Cox & Thompson | \"从辉煌到挣扎\" |\n| **Ch13** | **非洲** | **Martha Saavedra** | **塞内加尔 / 尼日利亚 / 南非** |\n| **Ch14** | **巴西** | **Votre & Mourão** | **进步与问题**——桑巴美与禁忌张力 |\n| Epilogue | 全球 | 编者 | FIFA\"女性化\"议程批判 |\n\n---\n\n## Prologue: Managing Monsters\n\nMarina Warner 的\"怪物化管理\"(Managing Monsters)概念：\n- 父权社会将**挑战传统性别角色的女性**视为\"需要管理的怪物\"\n- **\"Monsters are made, not given; if monsters are made, not given, they can be unmade too.\"**\n- 媒体与商业化的**双刃剑**：电视转播使女足进入主流视野，但可能以**打包成'有吸引力的女性化奇观'为代价**\n\n## Donna de Varona 的 5M 框架\n\n1999女足世界杯主席提出的实用工具：\n\n### M1 - MYTHS（迷思）\n阻碍女足发展的六大神话：参与体育失去女性气质 / 损害生育器官 / 女性不需体育课 / 不如男性强 / 无法盈利 / 不感兴趣\n\n### M2 - MANAGEMENT\n1972 Title IX 法案 / 1978 业余体育法重组 / 1974 Women's Sports Foundation（Billie Jean King）\n\n### M4 - 1999世界杯营销案例\n核心理念：\"激励下一代\"（非复制男足模式）/ 票价策略：提前7个月向草根提供低价票 / Michael Jordan vs Mia Hamm 广告\n\n### M5 - MONEY：结构性困境\n启动资金来自1994男足世界杯盈余 / FIFA官方赞助商无义务支持女足 / 成功完全依赖门票销售\n\n## 美国：\"例外主义\"与霸权体育文化理论 ⭐\n\n**Markovits & Hellerman 提出的最具解释力的单一理论框架：**\n\n> **女足在最成功的国家恰恰是男足不占据绝对主导地位的国家。**\n\n美国例外主义表现：Mia Hamm 比 Alexi Lalas 更广为人知 / 女性球员担任男足解说员（世界唯一）\n\n数据亮点：青少年足球联盟 888,705人(1980) → 3,884,423人(2001) / 高中女生参加有组织足球增长超700% / 1999世界杯总观众650,000+ / 中美决赛92,000现场观众 + Nielsen 11.4 rating\n\n## 中国：\"铿锵玫瑰\"⭐ 本章含金量极高\n\n### 黄金时代（1986-1999）\n\n**艰苦创业期**：1988年广州FIFA邀请赛（12国参加，中国第四）/ 中国足协不给预算 → 广州七星制药每年15万赞助 → 首支自力更生国足 / 英德训练基地：\n> \"我们每天训练10小时，每周6天。训练场地极其糟糕……又冷又饿——没有热水，食物不足……这样生活了整整五年！\"\n\n**辉煌期**：亚洲杯7次冠军 + 亚运会3次冠军 + 1996奥运银牌 + 1999世界杯银牌（点球惜败美国）/ 孙雯成为民族偶像\n\n### 性别重构：后Mao时代的女性主义\n\n矛盾现实：城市女性收入仅为男性77.4% / 1991年调查超半数认为男性优于女性 / 但**国际赛场：男足几乎全败 vs 女足几乎全胜**\n\n**薪酬差距触目惊心**：顶级男足160,000 RMB/月 vs 顶级女足700 RMB/月（229倍差距）/ 刘爱玲：\"我不跟男球员比。我为我的国家和我自己而踢。\"\n\n### ⚠️ 危机四伏\n1. **性别偏见与人才断层**：全国仅10所女子足球学校 / 秦皇岛足球学校1000+男孩vs30女孩 / 1999北京青少年可口可乐杯30,000+参与者→仅72名女孩\n2. **足协体制挤压**：\"我们不反对女足，但我们也不推广它\" / 女足不允许国内转会\n3. **职业联赛困境**：2003年仅存9支俱乐部 / 场均~100人 vs 男足世界杯预选赛3000+记者\n\n## 非洲三国志\n\n### 塞内加尔：先驱者的孤独战斗\n- 非洲最早组建女足国家队之一 / Françoise Seck 的倡导努力 / 2003年全国联赛20队（1997年仅6队）\n- 文化障碍不是关于女同性恋而是关于**生育能力和社会经济地位** / 两种理想女性形象：disquette（苗条西式）vs drianke（丰满富态）\n\n### 尼日利亚：非洲女足霸主\n- 人口基数大优势 + 俱乐部层面获较多赞助 / **风险**：沙里亚法在部分州的推行\n\n### 南非：种族隔离后遗产\n- 足球是黑人的运动（白人偏好橄榄球/板球）/ Apartheid时期排除在学校体育之外 / 后Apartheid时代的修辞承诺vs实际资源分配落差\n\n## 巴西：美丽与禁忌的张力\n\n> \"红色指甲油、闪亮口红、精致发型、黑色短裤和黄色球衣——这就是 Neusa Cavalheiros 的造型。……她们不是在排练桑巴学校表演秀。她们在足球场上。\" ——葡萄牙人体育场巴西女足杯开幕式\n\n**用超强女性化符号来抵消足球的\"男性化\"威胁** —— 巴西社会处理矛盾的独特方式。但1990年代后巴西国内女足全面衰退。\n\n## Epilogue：未来与批判\n\n- FIFA声称女足应被\"feminized\" —— Sasi联赛（Sky Digital 2003）将此推向极端\n- 核心结论：**经济增长 + 政府政策 + 女性组织化** 三者交汇点决定未来\n\n---\n\n## 本书学术贡献\n\n1. **霸权体育文化理论**(Markovits)：解释为何女足在\"非足球强国\"最成功\n2. **5M框架**(de Varona)：实用的女足发展评估工具\n3. **中国女足深度学术分析**(Fan Hong)：英文世界中最深入的研究之一\n4. **非洲三国志**(Saavedra)：填补英语学术界空白\n5. **全球南北对话**：覆盖北美/欧洲/亚洲/非洲/拉美/大洋洲\n`
   }
 ];
+const catLabels={'球员自传':'球员自传','教练':'教练手记','运动心理':'运动心理','战术':'战术教学','综合':'综合历史','产业报告':'产业报告','指南':'指南'};
+let curFilter='all',curTag='',curSearch='';
+
+function init(){renderNav();renderTagCloud();renderHome()}
+function renderNav(){const n=document.getElementById('navBar');let h='<button class="nav-btn active" data-cat="all" onclick="filterCat(\'all\',this)">全部</button>';Object.keys(catLabels).forEach(c=>{const cnt=books.filter(b=>b.category===c).length;h+=`<button class="nav-btn" data-cat="${c}" onclick="filterCat('${c}',this)">${catLabels[c]} (${cnt})</button>`});n.innerHTML=h}
+function filterCat(c,el){curFilter=c;curTag='';document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));if(el)el.classList.add('active');renderHome()}
+function filterTag(t){curTag=t;curFilter='all';document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));renderHome()}
+function renderTagCloud(){const c=document.getElementById('tagCloud');const ts=[...new Set(books.flatMap(b=>b.tags))].sort();c.innerHTML=ts.map(t=>`<button class="tag-btn" onclick="filterTag('${t}')">${t}</button>`).join('')}
+function renderCards(items){return items.map(b=>`<div class="card" onclick="showDetail('${b.id}')"><div class="card-emoji">${b.emoji}</div><div class="card-title">${b.title}</div><div class="card-meta">${b.author}${b.year?' | '+b.year:''}${b.region?' | '+b.region:''}</div><div class="card-desc">${b.one_line}</div><div class="card-tags">${b.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div></div>`).join('')}
+
+function renderHome(){
+  const s=document.getElementById('categorySections');
+  let filtered=books;
+  if(curTag){filtered=books.filter(b=>b.tags.includes(curTag));s.innerHTML=`<div class="search-info">话题 "<strong>${curTag}</strong>" 相关的 ${filtered.length} 条结果</div><div class="card-grid">${renderCards(filtered)}</div>`;return}
+  if(curFilter!=='all'){filtered=books.filter(b=>b.category===curFilter);s.innerHTML=`<div class="search-info">${catLabels[curFilter]} - ${filtered.length} 条</div><div class="card-grid">${renderCards(filtered)}</div>`;return}
+  const g={};filtered.forEach(b=>{if(!g[b.category])g[b.category]=[];g[b.category].push(b)});
+  let h='';const order=['球员自传','教练','运动心理','战术','综合','产业报告','指南'];
   order.forEach(c=>{if(g[c])h+=`<div class="category-section"><div class="category-title">${catLabels[c]}</div><div class="card-grid">${renderCards(g[c])}</div></div>`});
   s.innerHTML=h;
 }
